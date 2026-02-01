@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pbsNet Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css"> <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { slate: { 850: '#1e293b', 900: '#0f172a', 950: '#020617' } } } }
+        }
+    </script>
+</head>
+<body class="text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-300">
+
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] transform -translate-y-32 opacity-0 pointer-events-none">
+        <div id="toast-bg" class="flex items-center gap-3 px-6 py-3 rounded-full shadow-xl border text-white font-bold text-sm backdrop-blur-md">
+            <i id="toast-icon"></i><span id="toast-msg"></span>
+        </div>
+    </div>
+    <div id="global-loader" class="fixed inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-[90] hidden flex flex-col items-center justify-center">
+        <div class="w-12 h-12 border-4 border-blue-200 dark:border-slate-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mb-4"></div>
+        <p class="text-slate-500 dark:text-slate-400 font-bold text-sm tracking-widest uppercase">Processing</p>
+    </div>
+
+    <div id="auth-section" class="hidden flex-grow flex items-center justify-center p-6 bg-[url('https://img.freepik.com/free-vector/white-abstract-background-design_23-2148825582.jpg')] dark:bg-[url('https://img.freepik.com/free-vector/dark-hexagonal-background-with-gradient-color_79603-1409.jpg')] bg-cover bg-center transition-all duration-500">
+        <div class="glass-card p-10 rounded-[2rem] w-full max-w-[420px] shadow-2xl fade-in relative overflow-hidden">
+            <button onclick="toggleTheme()" class="absolute top-6 right-6 text-slate-400 hover:text-blue-600 dark:hover:text-yellow-400 transition"><i id="theme-icon-auth" class="fa-solid fa-moon text-lg"></i></button>
+
+            <div class="text-center mb-10">
+                <div class="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl mb-4 shadow-lg shadow-blue-500/30"><i class="fa-solid fa-fingerprint"></i></div>
+                <h1 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight">pbsNet</h1>
+                <p class="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-[0.2em] mt-1">Digital pbs Portal</p>
+            </div>
+
+            <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-6 border border-slate-200 dark:border-slate-700">
+                <button onclick="switchTab('login')" id="tab-login" class="flex-1 py-2.5 rounded-lg text-sm font-bold bg-white dark:bg-slate-700 shadow-sm transition-all text-slate-800 dark:text-white">Login</button>
+                <button onclick="switchTab('register')" id="tab-register" class="flex-1 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all">Register</button>
+            </div>
+
+            <div id="login-form" class="space-y-4">
+                <div class="input-group"><input type="text" id="login-input" placeholder="Email or Phone Number" class="modern-input"><i class="fa-regular fa-user input-icon"></i></div>
+                <div class="input-group"><input type="password" id="login-pass" placeholder="Password" class="modern-input"><i class="fa-solid fa-lock input-icon"></i></div>
+                <div class="flex justify-end"><button onclick="showForgotUI()" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">Forgot Password?</button></div>
+                <button onclick="handleLogin()" class="w-full bg-slate-900 dark:bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-black dark:hover:bg-blue-700 transition shadow-lg active:scale-[0.98]">Login</button>
+            </div>
+
+            <div id="register-form" class="hidden space-y-4">
+                <div class="input-group"><input type="text" id="reg-name" placeholder="Full Name" class="modern-input"><i class="fa-regular fa-id-card input-icon"></i></div>
+                <div class="input-group"><input type="email" id="reg-email" placeholder="Email Address" class="modern-input"><i class="fa-regular fa-envelope input-icon"></i></div>
+                <div class="input-group"><input type="password" id="reg-pass" placeholder="Create Password" class="modern-input"><i class="fa-solid fa-key input-icon"></i></div>
+                <button onclick="handleRegister()" class="w-full bg-emerald-600 text-white py-3.5 rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg">Create Account</button>
+            </div>
+
+            <div id="forgot-form" class="hidden space-y-4 text-center">
+                <div class="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl text-orange-600 dark:text-orange-400 text-xs font-medium">Link will be sent to your email.</div>
+                <div class="input-group"><input type="email" id="forgot-email" placeholder="Registered Email" class="modern-input"><i class="fa-regular fa-envelope input-icon"></i></div>
+                <button onclick="sendRecoveryEmail()" class="w-full bg-orange-500 text-white py-3.5 rounded-xl font-bold hover:bg-orange-600 transition">Send Reset Link</button>
+                <button onclick="switchTab('login')" class="text-xs text-slate-400 font-bold uppercase mt-4 hover:text-slate-600 dark:hover:text-slate-300">Cancel</button>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700/50">
+                <button onclick="googleLogin()" class="w-full flex items-center justify-center gap-3 border border-slate-200 dark:border-slate-700 py-3 rounded-xl font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300 text-sm"><img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-5 h-5"> Google Login</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-section" class="hidden min-h-screen pb-10 flex flex-col">
+        <nav class="glass-card sticky top-0 z-50 !rounded-none !border-x-0 !border-t-0">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('home')">
+                    <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm shadow-md"><i class="fa-solid fa-fingerprint"></i></div>
+                    <span class="font-bold text-xl text-slate-800 dark:text-white tracking-tight">pbsNet</span>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center">
+                        <i id="theme-icon-dash" class="fa-solid fa-moon"></i>
+                    </button>
+                    <div class="relative group">
+                        <button id="nav-profile-btn" onclick="toggleNavMenu()" class="flex items-center gap-3 focus:outline-none bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 py-1 pl-1 pr-3 rounded-full border border-slate-200 dark:border-slate-700 transition">
+                            <img id="nav-avatar" class="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-600" src="">
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+                        </button>
+                        <div id="nav-dropdown" class="hidden absolute right-0 mt-3 w-52 glass-card rounded-xl border border-slate-100 dark:border-slate-700 p-2 z-50 fade-in">
+                            <div class="px-3 py-2 border-b border-slate-50 dark:border-slate-700 mb-1">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase">Account</p>
+                                <p id="nav-user-name" class="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">Loading...</p>
+                            </div>
+                            <button onclick="navigate('profile'); toggleNavMenu()" class="w-full text-left px-3 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg transition"><i class="fa-regular fa-user mr-2 text-xs"></i> My Profile</button>
+                            <button onclick="logout()" class="w-full text-left px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"><i class="fa-solid fa-power-off mr-2 text-xs"></i> Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-8">
+            
+            <div id="view-home" class="fade-in">
+
+                <div id="plugin-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    </div>
+            </div>
+
+            <div id="view-profile" class="hidden fade-in grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <aside class="lg:col-span-4 space-y-6">
+                    <div class="glass-card rounded-[2rem] p-6 relative">
+                        <div class="absolute top-6 right-6 flex gap-2 z-10">
+                            <button onclick="toggleSecurity()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-center"><i class="fa-solid fa-lock text-xs"></i></button>
+                            <button onclick="toggleEdit()" class="w-9 h-9 rounded-full bg-blue-50 dark:bg-slate-700 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
+                        </div>
+                        <div class="flex flex-col items-center mb-8 pt-4">
+                            <div class="relative group cursor-pointer w-28 h-28 rounded-full p-1 bg-white dark:bg-slate-700 shadow-lg" onclick="document.getElementById('file-upload').click()">
+                                <img id="user-avatar" class="w-full h-full rounded-full object-cover" src="">
+                                <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300"><i class="fa-solid fa-camera text-white"></i></div>
+                            </div>
+                            <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="uploadImage()">
+                            <h2 id="display-name-hero" class="mt-4 text-xl font-black text-slate-800 dark:text-white text-center">...</h2>
+                            <p id="display-post-hero" class="text-xs font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest mt-1 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full">...</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-2">
+                            <a id="link-call" href="#" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700 hover:border-blue-500 transition group">
+                                <i class="fa-solid fa-phone text-slate-400 group-hover:text-blue-500 text-lg mb-1"></i>
+                                <span class="text-[10px] font-bold uppercase text-slate-500">Call</span>
+                            </a>
+                            <a id="link-whatsapp" href="#" target="_blank" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800 hover:border-emerald-500 transition group">
+                                <i class="fa-brands fa-whatsapp text-emerald-500 text-lg mb-1 group-hover:scale-110 transition"></i>
+                                <span class="text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400">Chat</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="glass-card rounded-[1.5rem] p-5 mb-6">
+    <div class="flex items-center justify-between mb-3">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Username</span>
+        <button onclick="changeUsername()" class="text-[10px] font-bold text-blue-600 hover:underline">Change</button>
+    </div>
+    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-2 rounded-xl border dark:border-slate-700">
+        <span class="text-slate-400 font-bold text-xs pl-1">@</span>
+        <input type="text" id="username-input" readonly class="bg-transparent border-none outline-none text-slate-600 dark:text-slate-300 font-bold text-xs w-full truncate" value="...">
+        <button onclick="copyUsername()" class="text-slate-400 hover:text-blue-500 px-1" title="Copy Username">
+            <i class="fa-regular fa-copy"></i>
+        </button>
+    </div>
+</div>
+
+
+                    <div class="glass-card rounded-[1.5rem] p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"> API</span>
+                            <button onclick="generateKey()" class="text-[10px] font-bold text-blue-600 hover:underline">Change</button>
+                        </div>
+                        <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-2 rounded-xl border dark:border-slate-700">
+                            <input type="text" id="api-key-input" readonly class="bg-transparent border-none outline-none text-emerald-600 dark:text-emerald-400 font-mono text-xs w-full truncate" value="...">
+                            <button onclick="copyApiKey()" class="text-slate-400 hover:text-blue-500 px-1"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                    </div>
+                </aside>
+
+                <section class="lg:col-span-8 space-y-6">
+                    <div id="profile-details" class="glass-card rounded-[2.5rem] p-8 fade-in">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-white mb-6 flex items-center gap-2"><i class="fa-regular fa-id-card text-blue-500"></i> Personal Info</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="profile-field sm:col-span-2"><div class="field-icon bg-blue-50 dark:bg-slate-900 text-blue-600"><i class="fa-regular fa-user"></i></div><div><span class="info-label">Full Name</span><p id="v-name" class="info-value"></p></div></div>
+                            <div class="profile-field"><div class="field-icon bg-purple-50 dark:bg-slate-900 text-purple-600"><i class="fa-solid fa-briefcase"></i></div><div><span class="info-label">Designation</span><p id="v-post" class="info-value"></p></div></div>
+                            <div class="profile-field"><div class="field-icon bg-orange-50 dark:bg-slate-900 text-orange-600"><i class="fa-solid fa-building-columns"></i></div><div><span class="info-label">PBS Name</span><p id="v-pbs" class="info-value"></p></div></div>
+                            <div class="profile-field sm:col-span-2"><div class="field-icon bg-slate-100 dark:bg-slate-900 text-slate-600"><i class="fa-regular fa-building"></i></div><div><span class="info-label">Office Name</span><p id="v-office" class="info-value"></p></div></div>
+                            <div class="profile-field"><div class="field-icon bg-pink-50 dark:bg-slate-900 text-pink-600"><i class="fa-solid fa-location-dot"></i></div><div><span class="info-label">Own District</span><p id="v-district" class="info-value"></p></div></div>
+                            <div class="profile-field"><div class="field-icon bg-indigo-50 dark:bg-slate-900 text-indigo-600"><i class="fa-regular fa-calendar-check"></i></div><div><span class="info-label">Joining Date</span><p id="v-joining" class="info-value font-mono"></p></div></div>
+                            <div class="profile-field"><div class="field-icon bg-green-50 dark:bg-slate-900 text-green-600"><i class="fa-solid fa-phone"></i></div><div><span class="info-label">Mobile</span><p id="v-mobile" class="info-value font-mono"></p></div></div>
+                            <div class="profile-field"><div class="field-icon bg-red-50 dark:bg-slate-900 text-red-600"><i class="fa-regular fa-envelope"></i></div><div><span class="info-label">Email</span><p id="v-email" class="info-value text-xs break-all"></p></div></div>
+                            <div onclick="openFacebook()" class="profile-field bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/20 transition group md:col-span-2">
+                                <div class="field-icon bg-blue-100 dark:bg-slate-900 text-blue-600"><i class="fa-brands fa-facebook-f"></i></div>
+                                <div class="flex-grow flex justify-between items-center">
+                                    <div><span class="info-label text-blue-500">Facebook</span><p id="v-facebook" class="info-value text-blue-800 dark:text-blue-300"></p></div>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs text-blue-400 group-hover:translate-x-1 transition"></i>
+                                </div>
+                                <span id="v-facebook-url" class="hidden"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="profile-edit" class="hidden glass-card rounded-[2.5rem] p-8 fade-in space-y-5">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-white">Edit Profile</h3>
+                        <div class="space-y-4">
+                            <div class="input-group"><input type="text" id="e-name" placeholder="Full Name" class="modern-input"><i class="fa-regular fa-user input-icon"></i></div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="input-group"><input type="text" id="e-post" placeholder="Designation" class="modern-input"><i class="fa-solid fa-briefcase input-icon"></i></div>
+                                <div class="input-group relative"><select id="e-pbs" class="modern-select !pl-12"><option value="" disabled selected>Select PBS</option></select><i class="fa-solid fa-building-columns input-icon"></i><i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i></div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="input-group"><input type="text" id="e-office" placeholder="Office Name" class="modern-input"><i class="fa-regular fa-building input-icon"></i></div>
+                                <div class="input-group"><input type="text" id="e-district" placeholder="Own District" class="modern-input"><i class="fa-solid fa-map-pin input-icon"></i></div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="input-group"><input type="date" id="e-joining" class="modern-input !pl-4"></div>
+                                <div class="input-group"><input type="text" id="e-mobile" placeholder="Mobile Number" class="modern-input"><i class="fa-solid fa-phone input-icon"></i></div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="input-group"><input type="text" id="e-whatsapp" placeholder="WhatsApp" class="modern-input border-emerald-200 dark:border-emerald-900/50"><i class="fa-brands fa-whatsapp input-icon text-emerald-500"></i></div>
+                                <div class="input-group"><input type="text" id="e-facebook" placeholder="FB Profile Link" class="modern-input border-blue-200 dark:border-blue-900/50"><i class="fa-brands fa-facebook input-icon text-blue-500"></i></div>
+                            </div>
+                            <div class="flex gap-4 pt-2">
+                                <button onclick="saveProfile()" class="w-full bg-slate-900 dark:bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg hover:opacity-90">Save Changes</button>
+                                <button onclick="toggleEdit()" class="px-6 rounded-xl border border-slate-200 dark:border-slate-700 font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="security-form" class="hidden glass-card rounded-[2.5rem] p-8 fade-in border-red-100 dark:border-red-900/30">
+                        <h3 class="font-bold text-lg text-slate-800 dark:text-white mb-6 flex items-center gap-2"><i class="fa-solid fa-shield-halved text-red-500"></i> Security</h3>
+                        <div class="space-y-4 max-w-md">
+                            <div class="input-group"><input type="text" id="cp-new" placeholder="New Password" class="modern-input"><i class="fa-solid fa-key input-icon"></i></div>
+                            <div class="flex gap-3 pt-2">
+                                <button onclick="changePassword()" class="flex-grow bg-red-600 text-white py-3 rounded-xl font-bold hover:bg-red-700 transition">Update Password</button>
+                                <button onclick="toggleSecurity()" class="px-6 border border-slate-200 dark:border-slate-700 rounded-xl font-bold text-slate-500">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="profile.js"></script>
+    <script src="card_employ_list.js"></script>
+    <script src="dashboard.js"></script>
+
+    <script>
+        // MAIN INIT SCRIPT (Connects everything)
+        // index.html এর <script> সেকশনে window.onload আপডেট করুন
+
+window.onload = async function() {
+    populatePbs(); 
+    initTheme();
+    
+  
+    await handleGoogleSession(); 
+    
+    
+    await checkSession();
+
+    document.addEventListener('click', e => {
+        const drop = document.getElementById('nav-dropdown');
+        const btn = document.getElementById('nav-profile-btn');
+        if (drop && !drop.contains(e.target) && !btn.contains(e.target)) {
+            drop.classList.add('hidden');
+        }
+    });
+};
+
+        // Theme Logic
+        function initTheme() { 
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark'); updateIcons(true); } 
+            else { document.documentElement.classList.remove('dark'); updateIcons(false); } 
+        }
+        function toggleTheme() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); localStorage.theme = isDark ? 'dark' : 'light'; updateIcons(isDark); }
+        function updateIcons(isDark) { const cls = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; if(document.getElementById('theme-icon-auth')) document.getElementById('theme-icon-auth').className = cls; if(document.getElementById('theme-icon-dash')) document.getElementById('theme-icon-dash').className = cls; }
+
+        // ✅ UPDATED NAVIGATE FUNCTION (Fixes overlapping issue)
+function navigate(view) { 
+    // ১. মেইন কন্টেইনারের ভেতরের সব ভিউ (Home, Profile, Directory) হাইড করা
+    const mainContent = document.querySelector('main');
+    Array.from(mainContent.children).forEach(child => {
+        if (child.id && child.id.startsWith('view-')) {
+            child.classList.add('hidden');
+        }
+    });
+
+    // ২. স্পেসিফিক ভিউ ওপেন করা
+    const target = document.getElementById(`view-${view}`);
+    if(target) {
+        target.classList.remove('hidden');
+    }
+}
+
+        function toggleNavMenu() { document.getElementById('nav-dropdown').classList.toggle('hidden'); }
+        function populatePbs() { const s = document.getElementById('e-pbs'); PBS_LIST.forEach(p => { const o = document.createElement('option'); o.value = p; o.text = p; s.add(o); }); }
+
+        // Check Session & Route
+        async function checkSession() {
+            const token = getToken();
+            if (!token) {
+                document.getElementById('auth-section').classList.remove('hidden');
+                document.getElementById('dashboard-section').classList.add('hidden');
+                return;
+            }
+            try {
+                const user = await apiCall('/me');
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                initDashboard(user); 
+                populateProfileUI(user);
+            } catch (e) {
+                console.error("Session check failed", e);
+                document.getElementById('auth-section').classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
