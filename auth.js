@@ -10,7 +10,7 @@ client
 const account = new Appwrite.Account(client);
 
 // ✅ আপনার লাইভ ব্যাকএন্ড URL
-const BACKEND_URL = 'http://localhost:5000'; // প্রোডাকশনে আপনার ব্যাকএন্ড URL দিন
+const BACKEND_URL = 'https://lost-darsey-sbinc2jkj-81fcaf06.koyeb.app'; // প্রোডাকশনে আপনার ব্যাকএন্ড URL দিন
 
 // --- AUTH FUNCTIONS ---
 
