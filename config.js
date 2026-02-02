@@ -1,5 +1,5 @@
 // --- CONFIGURATION ---
-const API_URL = 'http://localhost:5000/api'; 
+const API_URL = 'https://lost-darsey-sbinc2jkj-81fcaf06.koyeb.app/api'; 
 
 // Updated Sorted List (A-Z)
 const PBS_LIST = [
