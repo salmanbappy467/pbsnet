@@ -1,83 +1,105 @@
 /**
  * 📂 File: card_employ_list.js
- * 📝 Description: Employee Directory with Full Profile Fetching
+ * 🔍 Directory Search (Gemini Themed)
  */
 
-const DirectoryApp = {
+window.DirectoryApp = {
     config: {
         id: 'employee_dir',
         title: 'Employee Directory',
-        icon: 'fa-solid fa-address-book',
-        color: 'bg-teal-100 text-teal-600',
-        desc: 'Search officers & View full details.',
         allowedPosts: ['All'],
         action: () => DirectoryApp.initView()
     },
 
+    state: {
+        offset: 0,
+        limit: 10,
+        isLoading: false
+    },
+
     initView: function() {
+        // Hide other views
         document.getElementById('view-home').classList.add('hidden');
         document.getElementById('view-profile').classList.add('hidden');
         
         let dirView = document.getElementById('view-directory');
         if (!dirView) {
-            const mainContainer = document.querySelector('main');
+            const main = document.querySelector('main');
             dirView = document.createElement('div');
             dirView.id = 'view-directory';
-            dirView.className = 'fade-in space-y-6';
+            dirView.className = 'fade-in space-y-6 pb-20'; // Bottom padding for scrolling
             
             dirView.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Employee Directory</h2>
-                        <p class="text-slate-400 text-sm">Find contact details.</p>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-[#2e2f30] flex items-center justify-center text-blue-600 dark:text-[#a8c7fa]">
+                            <i class="fa-solid fa-address-book"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Directory</h2>
                     </div>
-                    <button onclick="DirectoryApp.close()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-red-50 hover:text-red-500 transition flex items-center justify-center">
-                        <i class="fa-solid fa-xmark text-lg"></i>
+                    <button onclick="DirectoryApp.close()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#2e2f30] hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-500 dark:text-[#c4c7c5] hover:text-red-500 transition">
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
-                <div class="glass-card p-4 rounded-2xl flex flex-col md:flex-row gap-4">
-                    <div class="flex-grow relative">
-                        <input type="text" id="dir-search" placeholder="Name, Mobile, Username..." class="modern-input pl-12" onkeyup="DirectoryApp.handleSearch()">
-                        <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <div class="bg-white dark:bg-[#1e1f20] p-3 rounded-2xl border border-slate-200 dark:border-[#444746] grid grid-cols-1 md:grid-cols-3 gap-3 shadow-sm">
+                    
+                    <div class="relative group">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#c4c7c5]"></i>
+                        <input type="text" id="dir-search" placeholder="Search name..." 
+                            class="w-full bg-slate-50 dark:bg-[#2e2f30] text-slate-800 dark:text-white pl-10 pr-4 py-3 rounded-xl outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-[#a8c7fa] border border-transparent transition placeholder:text-slate-400 dark:placeholder:text-[#c4c7c5]/50" 
+                            onkeyup="DirectoryApp.handleSearch()">
                     </div>
-                    <div class="w-full md:w-1/4 relative">
-                        <select id="dir-pbs" class="modern-select" onchange="DirectoryApp.fetchData()">
-                            <option value="" disabled selected>Select PBS</option>
+                    
+                    <div class="relative">
+                        <select id="dir-pbs" 
+                            class="w-full bg-slate-50 dark:bg-[#2e2f30] text-slate-800 dark:text-white pl-4 pr-10 py-3 rounded-xl outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-[#a8c7fa] border border-transparent appearance-none transition" 
+                            onchange="DirectoryApp.handleSearch()">
+                            <option value="">All PBS</option>
                         </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                     </div>
-                    <div class="w-full md:w-1/4 relative">
-                        <select id="dir-post" class="modern-select" onchange="DirectoryApp.fetchData()">
-                            <option value="">All Designations</option>
-                            <option value="GM">GM</option>
-                            <option value="DGM">DGM</option>
-                            <option value="AGM">AGM</option>
-                            <option value="JE">Junior Engineer</option>
-                            <option value="EC">Enforcement Coordinator</option>
-                            <option value="Lineman">Lineman</option>
+                    
+                    <div class="relative">
+                        <select id="dir-post" 
+                            class="w-full bg-slate-50 dark:bg-[#2e2f30] text-slate-800 dark:text-white pl-4 pr-10 py-3 rounded-xl outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-[#a8c7fa] border border-transparent appearance-none transition" 
+                            onchange="DirectoryApp.handleSearch()">
+                            <option value="">All Posts</option>
                         </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
                     </div>
                 </div>
 
-                <div id="dir-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
-                    <div class="col-span-full text-center py-10 text-slate-400">
-                        <i class="fa-solid fa-magnifying-glass text-4xl mb-3 opacity-50"></i>
-                        <p>Search to verify details.</p>
+                <div id="dir-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                    <div class="col-span-full text-center py-16 text-slate-400 dark:text-[#c4c7c5]">
+                        <i class="fa-solid fa-magnifying-glass text-4xl mb-4 opacity-30"></i>
+                        <p>Search or select filters to view employees.</p>
                     </div>
+                </div>
+
+                <div id="dir-load-more" class="hidden text-center pt-6">
+                    <button onclick="DirectoryApp.loadMore()" class="px-6 py-2.5 rounded-full bg-blue-50 dark:bg-[#2e2f30] text-blue-600 dark:text-[#a8c7fa] font-bold hover:bg-blue-100 dark:hover:bg-[#333537] transition text-sm">
+                        Load More Results
+                    </button>
                 </div>
             `;
-            mainContainer.appendChild(dirView);
-
+            main.appendChild(dirView);
+            
+            // Populate Filters
             if (typeof PBS_LIST !== 'undefined') {
-                const pbsSelect = document.getElementById('dir-pbs');
-                PBS_LIST.forEach(pbs => {
-                    const opt = document.createElement('option');
-                    opt.value = pbs;
-                    opt.text = pbs;
-                    pbsSelect.add(opt);
+                const sel = document.getElementById('dir-pbs');
+                PBS_LIST.forEach(p => { 
+                    const o = document.createElement('option'); o.value = p; o.text = p; sel.add(o); 
+                });
+            }
+            if (typeof DESIGNATION_LIST !== 'undefined') {
+                const postSel = document.getElementById('dir-post');
+                DESIGNATION_LIST.forEach(d => {
+                    const o = document.createElement('option'); o.value = d; o.text = d; postSel.add(o);
                 });
             }
         }
+        
         dirView.classList.remove('hidden');
     },
 
@@ -89,197 +111,189 @@ const DirectoryApp = {
     timer: null,
     handleSearch: function() {
         clearTimeout(this.timer);
-        this.timer = setTimeout(() => this.fetchData(), 500);
+        this.timer = setTimeout(() => {
+            this.state.offset = 0;
+            this.fetchData(true);
+        }, 500);
     },
 
-    // 1️⃣ Fetch List (Search API)
-    fetchData: async function() {
-        const query = document.getElementById('dir-search').value;
+    loadMore: function() {
+        this.state.offset += this.state.limit;
+        this.fetchData(false);
+    },
+
+    fetchData: async function(isReset) {
+        const queryText = document.getElementById('dir-search').value.trim();
         const pbs = document.getElementById('dir-pbs').value;
-        const designation = document.getElementById('dir-post').value;
+        const post = document.getElementById('dir-post').value;
         const container = document.getElementById('dir-results');
+        const loadMoreBtn = document.getElementById('dir-load-more');
 
-        if(!query && !pbs && !designation) {
-             container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400"><p>Search to find people.</p></div>`;
-             return;
-        }
-
-        container.innerHTML = '<p class="text-center col-span-full text-slate-400 py-4"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Searching...</p>';
-
-        try {
-            let url = `/users/search?search=${encodeURIComponent(query)}`;
-            if (pbs) url += `&pbs=${encodeURIComponent(pbs)}`;
-            if (designation) url += `&designation=${encodeURIComponent(designation)}`;
-
-            const res = await apiCall(url);
-            const users = res.users || [];
-
-            container.innerHTML = ''; 
-
-            if (users.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-10"><p class="text-slate-500 font-bold">No results found.</p></div>`;
-                return;
-            }
-
-            users.forEach(u => {
-                // Mapping keys from Search API
-                const name = u.full_name || u.name || 'Unknown';
-                const post = u.post_name || u.designation || 'N/A';
-                const pbsName = u.pbs_name || u.pbs || '-';
-                const avatar = u.profile_pic_url || u.pic_url || `https://ui-avatars.com/api/?name=${name}&background=random`;
-                const mobileDisplay = u.mobile || 'N/A';
-
-                const card = document.createElement('div');
-                card.className = "glass-card p-4 rounded-xl cursor-pointer hover:border-blue-500 transition flex items-center gap-4 group";
-                
-                card.innerHTML = `
-                    <img src="${avatar}" class="w-14 h-14 rounded-full object-cover border-2 border-slate-100 group-hover:border-blue-200 transition">
-                    <div class="flex-grow min-w-0">
-                        <h4 class="font-bold text-slate-700 dark:text-slate-200 truncate">${name}</h4>
-                        <p class="text-xs text-blue-600 font-bold uppercase mb-0.5">${post}</p>
-                        <p class="text-xs text-slate-400 truncate"><i class="fa-solid fa-building-columns mr-1"></i>${pbsName}</p>
-                        <p class="text-xs text-slate-500 font-mono truncate"><i class="fa-solid fa-phone mr-1"></i>${mobileDisplay}</p>
-                    </div>
-                    <div class="text-slate-300 group-hover:text-blue-500">
-                        <i class="fa-regular fa-eye"></i>
-                    </div>
-                `;
-
-                // ✅ CLICK: Call Function to Fetch Full Data
-                card.onclick = () => DirectoryApp.fetchAndShowProfile(u.username, u);
-                
-                container.appendChild(card);
-            });
-
-        } catch (err) {
-            console.error(err);
-            container.innerHTML = `<p class="text-center col-span-full text-red-400">Error loading data.</p>`;
-        }
-    },
-
-    // 2️⃣ Fetch Full Profile Details (Profile API)
-    fetchAndShowProfile: async function(username, fallbackData) {
-        // If no username, show fallback data immediately
-        if(!username) {
-            DirectoryApp.showProfileModal(fallbackData);
+        if (!queryText && !pbs && !post) {
+            container.innerHTML = `<div class="col-span-full text-center py-16 text-slate-400 dark:text-[#c4c7c5]">
+                <i class="fa-solid fa-magnifying-glass text-4xl mb-4 opacity-30"></i>
+                <p>Start searching to find colleagues.</p>
+            </div>`;
+            loadMoreBtn.classList.add('hidden');
             return;
         }
 
-        // Show Global Loader
-        if(typeof toggleLoader === 'function') toggleLoader(true);
+        if (this.state.isLoading) return;
+        this.state.isLoading = true;
+
+        if (isReset) {
+            container.innerHTML = '<p class="text-center col-span-full text-slate-400 dark:text-[#c4c7c5] py-10"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Searching...</p>';
+            loadMoreBtn.classList.add('hidden');
+        } else {
+            loadMoreBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Loading...';
+        }
 
         try {
-            // 🔥 API CALL: Fetch Fresh Full Data
-            // Note: API Call uses global `apiCall` from config.js
-            const fullData = await apiCall(`/profile/${username}`);
-            DirectoryApp.showProfileModal(fullData);
-        } catch (e) {
-            console.error("Profile Fetch Error:", e);
-            // If API fails, show what we have from search
-            DirectoryApp.showProfileModal(fallbackData);
+            let q = [];
+            if (pbs) q.push(Appwrite.Query.equal('pbs_name', pbs));
+            if (post) q.push(Appwrite.Query.equal('post_name', post));
+            if (queryText) q.push(Appwrite.Query.search('full_name', queryText)); 
+
+            q.push(Appwrite.Query.limit(this.state.limit));
+            q.push(Appwrite.Query.offset(this.state.offset));
+            q.push(Appwrite.Query.orderDesc('$createdAt'));
+
+            const res = await databases.listDocuments(DB_ID, COLL_PROFILE, q);
+            const users = res.documents;
+
+            if (isReset) container.innerHTML = ''; 
+            
+            if (users.length === 0 && isReset) {
+                container.innerHTML = `<div class="col-span-full text-center py-16 text-slate-400 dark:text-[#c4c7c5]">No employees found matching criteria.</div>`;
+                loadMoreBtn.classList.add('hidden');
+            } else {
+                users.forEach(u => {
+                    let pic = `https://ui-avatars.com/api/?name=${u.full_name}&background=random`;
+                    if(u.profile_pic_id) {
+                        try { pic = storage.getFileView(BUCKET_ID, u.profile_pic_id).href; } catch(e){}
+                    }
+
+                    const card = document.createElement('div');
+                    // ✅ Updated Card Style: Solid, Clean, Hover Border
+                    card.className = "bg-white dark:bg-[#1e1f20] p-4 rounded-2xl cursor-pointer border border-slate-200 dark:border-[#444746] hover:border-blue-400 dark:hover:border-[#a8c7fa] transition flex items-center gap-4 group";
+                    
+                    card.innerHTML = `
+                        <img src="${pic}" class="w-12 h-12 rounded-full object-cover border border-slate-100 dark:border-[#444746]">
+                        <div class="min-w-0 flex-1">
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-[#e3e3e3] truncate group-hover:text-blue-600 dark:group-hover:text-[#a8c7fa] transition">${u.full_name}</h4>
+                            <p class="text-xs font-bold text-blue-600 dark:text-[#a8c7fa] uppercase mt-0.5">${u.post_name || 'N/A'}</p>
+                            <p class="text-[10px] text-slate-400 dark:text-[#c4c7c5] truncate mt-1"><i class="fa-solid fa-building-columns mr-1"></i>${u.pbs_name || '-'}</p>
+                        </div>
+                        <div class="text-slate-300 dark:text-[#444746] group-hover:text-blue-500 dark:group-hover:text-[#a8c7fa] transition">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    `;
+                    card.onclick = () => DirectoryApp.showProfileModal(u, pic);
+                    container.appendChild(card);
+                });
+
+                if (res.total > (this.state.offset + users.length)) {
+                    loadMoreBtn.classList.remove('hidden');
+                    loadMoreBtn.innerHTML = `<button onclick="DirectoryApp.loadMore()" class="px-6 py-2.5 rounded-full bg-blue-50 dark:bg-[#2e2f30] text-blue-600 dark:text-[#a8c7fa] font-bold hover:bg-blue-100 dark:hover:bg-[#333537] transition text-sm">Load More</button>`;
+                } else {
+                    loadMoreBtn.classList.add('hidden');
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            if(isReset) container.innerHTML = `<p class="text-center text-red-400 col-span-full">Error: ${err.message}</p>`;
         } finally {
-            if(typeof toggleLoader === 'function') toggleLoader(false);
+            this.state.isLoading = false;
         }
     },
 
-    // 3️⃣ Show Modal with Data
-    showProfileModal: function(u) {
-        const existingModal = document.getElementById('dir-profile-modal');
-        if(existingModal) existingModal.remove();
-
-        // 🛠️ KEY MAPPING (Handles both Search API & Profile API keys)
-        const name = u.full_name || u.name || 'Unknown';
-        const post = u.post_name || u.designation || 'N/A';
-        const pbsName = u.pbs_name || u.pbs || '-';
-        const office = u.office_name || u.office || '-';
-        const mobile = u.mobile || "";
-        const email = u.email || "-";
-        const username = u.username || "-";
-        const avatar = u.profile_pic_url || u.pic_url || `https://ui-avatars.com/api/?name=${name}&background=random`;
-        
-        // 🛠️ JSON PARSING
+    // ✅ GEMINI STYLE PROFILE MODAL
+    showProfileModal: function(u, picUrl) {
         let personal = {};
-        if (u.personal_json) {
-            if (typeof u.personal_json === 'object') {
-                personal = u.personal_json;
-            } else if (typeof u.personal_json === 'string') {
-                try {
-                    personal = JSON.parse(u.personal_json);
-                } catch(e) { console.error("JSON Error", e); }
+        try { 
+            if(typeof u.personal_json === 'string') {
+                personal = JSON.parse(u.personal_json || '{}');
+            } else {
+                personal = u.personal_json || {};
             }
-        }
-
-        // Social Links
-        let fbLink = personal.facebook || null;
-        if(fbLink && !fbLink.startsWith('http')) fbLink = `https://${fbLink}`;
+        } catch(e){}
 
         let waLink = null;
-        if(personal.whatsapp) {
-            const waNumber = personal.whatsapp.replace(/[^0-9]/g, ''); 
-            waLink = `https://wa.me/${waNumber}`;
-        }
+        if(personal.whatsapp) waLink = `https://wa.me/${personal.whatsapp.replace(/[^0-9]/g, '')}`;
+        let fbLink = personal.facebook;
+        if(fbLink && !fbLink.startsWith('http')) fbLink = `https://${fbLink}`;
 
         const modal = document.createElement('div');
-        modal.id = 'dir-profile-modal';
-        modal.className = "fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 fade-in";
+        // Dark Overlay
+        modal.className = "fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-4 fade-in";
         
         modal.innerHTML = `
-            <div class="glass-card w-full max-w-sm rounded-[2rem] overflow-hidden relative shadow-2xl bg-white dark:bg-slate-900 transform transition-all scale-100">
-                <div class="h-24 bg-gradient-to-r from-blue-600 to-indigo-500"></div>
+            <div class="w-full max-w-sm bg-white dark:bg-[#1e1f20] rounded-[2rem] relative overflow-hidden shadow-2xl border border-slate-200 dark:border-[#444746] flex flex-col max-h-[90vh]">
                 
-                <button onclick="document.getElementById('dir-profile-modal').remove()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white text-white hover:text-red-500 flex items-center justify-center transition backdrop-blur-md">
+                <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/10 dark:bg-white/10 text-slate-600 dark:text-[#e3e3e3] flex items-center justify-center hover:bg-red-500 hover:text-white transition">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
+                
+                <div class="overflow-y-auto p-6 scroll-smooth">
+                    
+                    <div class="text-center mt-4">
+                        <img src="${picUrl}" class="w-24 h-24 rounded-full mx-auto border-4 border-white dark:border-[#131314] shadow-lg object-cover bg-slate-100 dark:bg-[#2e2f30]">
+                        
+                        <h2 class="text-xl font-bold mt-4 text-slate-800 dark:text-[#e3e3e3]">${u.full_name}</h2>
+                        <span class="bg-blue-50 dark:bg-[#2e2f30] text-blue-600 dark:text-[#a8c7fa] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mt-2 inline-block border border-blue-100 dark:border-[#444746]">
+                            ${u.post_name || 'N/A'}
+                        </span>
+                    
+                    </div>
 
-                <div class="px-6 -mt-12 mb-4 text-center">
-                    <img src="${avatar}" class="w-24 h-24 rounded-full border-4 border-white dark:border-slate-800 shadow-md object-cover mx-auto bg-white">
-                    <h2 class="text-xl font-bold text-slate-800 dark:text-white mt-2">${name}</h2>
-                    <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">${post}</span>
-                    <p class="text-xs text-slate-400 mt-1">@${username}</p>
+                    <div class="mt-4 space-y-3 text-left">
+
+
+                        <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-[#2e2f30] border border-slate-100 dark:border-[#444746]">
+                            <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-[#131314] text-purple-600 dark:text-[#a8c7fa] flex items-center justify-center"><i class="fa-solid fa-map-location-dot"></i></div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 dark:text-[#c4c7c5] uppercase font-bold">Office</p>
+                                <p class="text-sm font-bold text-slate-700 dark:text-[#e3e3e3]">${u.office_name || 'HQ'}<br/>${u.pbs_name || '-'}</p>
+                            </div>
+                        </div>
+                     
+
+
+                        <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-[#2e2f30] border border-slate-100 dark:border-[#444746]">
+                            <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-[#131314] text-blue-600 dark:text-[#a8c7fa] flex items-center justify-center"><i class="fa-solid fa-phone"></i></div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 dark:text-[#c4c7c5] uppercase font-bold">Mobile</p>
+                                <a href="tel:${u.mobile}" class="text-sm font-bold text-slate-700 dark:text-[#e3e3e3] hover:underline font-mono">${u.mobile || 'N/A'}</a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-[#2e2f30] border border-slate-100 dark:border-[#444746]">
+                            <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-[#131314] text-purple-600 dark:text-[#a8c7fa] flex items-center justify-center"><i class="fa-solid fa-map-location-dot"></i></div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 dark:text-[#c4c7c5] uppercase font-bold">Home District</p>
+                                <p class="text-sm font-bold text-slate-700 dark:text-[#e3e3e3]">${personal.own_district || 'Not Set'}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-[#2e2f30] border border-slate-100 dark:border-[#444746]">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-[#131314] text-emerald-600 dark:text-[#a8c7fa] flex items-center justify-center"><i class="fa-solid fa-calendar-day"></i></div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 dark:text-[#c4c7c5] uppercase font-bold">Joining Date</p>
+                                <p class="text-sm font-bold text-slate-700 dark:text-[#e3e3e3]">${personal.joining_date || '-'}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="px-6 pb-6 space-y-3 max-h-[60vh] overflow-y-auto">
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center"><i class="fa-solid fa-building-columns"></i></div>
-                        <div><p class="text-[10px] text-slate-400 uppercase font-bold">PBS & Office</p><p class="text-sm font-bold text-slate-700 dark:text-slate-200">${pbsName} <span class="text-slate-300">|</span> ${office}</p></div>
-                    </div>
-
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center"><i class="fa-solid fa-phone"></i></div>
-                        <div><p class="text-[10px] text-slate-400 uppercase font-bold">Mobile</p><a href="tel:${mobile}" class="text-sm font-bold text-blue-600 hover:underline">${mobile || 'N/A'}</a></div>
-                    </div>
-
-                    <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center"><i class="fa-regular fa-envelope"></i></div>
-                        <div><p class="text-[10px] text-slate-400 uppercase font-bold">Email</p><p class="text-xs font-bold text-slate-700 dark:text-slate-200 break-all">${email}</p></div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                         <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                            <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Own District</p>
-                            <p class="text-sm font-bold text-slate-700 dark:text-slate-200">${personal.own_district || '-'}</p>
-                         </div>
-                         <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                            <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Joining Date</p>
-                            <p class="text-sm font-bold text-slate-700 dark:text-slate-200">${personal.joining_date || '-'}</p>
-                         </div>
-                    </div>
-                    
-                    <div class="flex gap-2 pt-2">
-                        <a href="tel:${mobile}" class="flex-1 bg-slate-800 dark:bg-slate-700 text-white py-2 rounded-lg text-center font-bold text-sm hover:opacity-90 transition"><i class="fa-solid fa-phone mr-2"></i>Call</a>
-                        
-                        ${waLink ? `<a href="${waLink}" target="_blank" class="flex-1 bg-emerald-500 text-white py-2 rounded-lg text-center font-bold text-sm hover:opacity-90 transition"><i class="fa-brands fa-whatsapp mr-2"></i>WhatsApp</a>` : ''}
-                        
-                        ${fbLink ? `<a href="${fbLink}" target="_blank" class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-center font-bold text-sm hover:opacity-90 transition"><i class="fa-brands fa-facebook-f mr-2"></i>FB</a>` : ''}
-                     </div>
+                <div class="p-4 bg-slate-50 dark:bg-[#2e2f30] border-t border-slate-100 dark:border-[#444746] flex gap-3">
+                    <a href="tel:${u.mobile}" class="flex-1 bg-slate-900 dark:bg-[#a8c7fa] text-white dark:text-[#131314] py-3 rounded-xl font-bold text-sm hover:opacity-90 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-phone"></i> Call
+                    </a>
+                    ${waLink ? `<a href="${waLink}" target="_blank" class="flex-1 bg-emerald-500 text-white py-3 rounded-xl font-bold text-sm hover:opacity-90 transition flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp text-lg"></i> Chat</a>` : ''}
+                    ${fbLink ? `<a href="${fbLink}" target="_blank" class="w-12 bg-blue-600 text-white rounded-xl flex items-center justify-center hover:opacity-90 transition"><i class="fa-brands fa-facebook-f"></i></a>` : ''}
                 </div>
             </div>
         `;
-
         document.body.appendChild(modal);
-
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) modal.remove();
-        });
     }
 };

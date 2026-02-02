@@ -142,14 +142,14 @@ function renderCards() {
     });
 
     if (filteredApps.length === 0) {
-        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400">No apps found matching your criteria.</div>`;
+        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-300">No apps found matching your criteria.</div>`;
         return;
     }
 
     // 3. Render Cards
     filteredApps.forEach(app => {
         const isFav = dashboardState.favorites.includes(app.id);
-        const badgeHtml = app.badge ? `<span class="absolute top-4 right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">${app.badge} New</span>` : '';
+        const badgeHtml = app.badge ? `<span class="absolute top-4 right-4 bg-red-500 text-white text-[7px] font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">${app.badge} New</span>` : '';
 
         const card = document.createElement('div');
         card.className = `relative glass-card p-6 rounded-2xl cursor-pointer hover:shadow-xl hover:-translate-y-1 transition group bg-white/50 dark:bg-slate-800/50 border-2 ${isFav ? 'border-blue-200 dark:border-blue-900/50' : 'border-transparent'}`;
@@ -164,12 +164,18 @@ function renderCards() {
                     <i class="${isFav ? 'fa-solid text-yellow-400' : 'fa-regular'} fa-star text-lg"></i>
                 </button>
             </div>
-            <h3 class="font-bold text-slate-700 dark:text-slate-200 text-lg mb-1">${app.title}</h3>
-            <p class="text-xs text-slate-400 font-medium mb-3 min-h-[20px]">${app.desc}</p>
+            
+            <div class="mb-4">
+                <h3 class="font-bold text-slate-700 dark:text-slate-200 text-lg mb-1">${app.title}</h3>
+                <p class="text-xs text-slate-400 dark:text-slate-400 font-medium line-clamp-2">${app.desc}</p>
+            </div>
             
             <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-700/50">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">${app.category}</span>
-                <i class="fa-solid fa-arrow-right text-slate-300 group-hover:text-blue-500 transition -rotate-45 group-hover:rotate-0"></i>
+                <span class="card-category">${app.category}</span>
+                
+                <div class="card-footer-icon">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
             </div>
         `;
 

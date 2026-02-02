@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pbsNet Dashboard</title>
+    <title>pbsNet</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'><path fill='%233b82f6' d='M297.2 248.9C311.6 228.3 298.7 200 273.6 200H208V32c0-24.3-26.4-39.2-46.7-26.4L15.1 199.1c-16.6 10.4-11.3 36.3 7.8 39.8L104 256v192c0 23.9 26 38.8 46.5 26.8l146.7-225.9z'/></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css"> <script>
+    <link rel="stylesheet" href="style.css?v=1.1"> 
+    <script>
         tailwind.config = {
             darkMode: 'class',
             theme: { extend: { colors: { slate: { 850: '#1e293b', 900: '#0f172a', 950: '#020617' } } } }
@@ -70,46 +72,56 @@
     </div>
 
     <div id="dashboard-section" class="hidden min-h-screen pb-10 flex flex-col">
-        <nav class="glass-card sticky top-0 z-50 !rounded-none !border-x-0 !border-t-0">
-            <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-                <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('home')">
-                    <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white text-sm shadow-md"><i class="fa-solid fa-fingerprint"></i></div>
-                    <span class="font-bold text-xl text-slate-800 dark:text-white tracking-tight">pbsNet</span>
-                </div>
+     
+        <nav class="sticky top-0 z-50 bg-transparent">
+    <div class="w-full px-6 py-3 flex justify-between items-center">
+        
+        <div class="flex items-center gap-3 cursor-pointer group" onclick="navigate('home')">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-[#2e2f30] flex items-center justify-center text-blue-600 dark:text-gemini-accent transition group-hover:scale-105">
+                <i class="fa-solid fa-house text-lg"></i>
+            </div>
+            
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <div class="relative group">
+                <button id="nav-profile-btn" onclick="toggleNavMenu()" class="flex items-center gap-2 focus:outline-none bg-slate-100 dark:bg-[#2e2f30] hover:bg-slate-200 dark:hover:bg-gemini-hover py-1 pl-1 pr-3 rounded-full border border-slate-200 dark:border-gemini-border transition">
+                    <img id="nav-avatar" class="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-600" src="">
+                    
+                </button>
                 
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center">
-                        <i id="theme-icon-dash" class="fa-solid fa-moon"></i>
-                    </button>
-                    <div class="relative group">
-                        <button id="nav-profile-btn" onclick="toggleNavMenu()" class="flex items-center gap-3 focus:outline-none bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 py-1 pl-1 pr-3 rounded-full border border-slate-200 dark:border-slate-700 transition">
-                            <img id="nav-avatar" class="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-600" src="">
-                            <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
-                        </button>
-                        <div id="nav-dropdown" class="hidden absolute right-0 mt-3 w-52 glass-card rounded-xl border border-slate-100 dark:border-slate-700 p-2 z-50 fade-in">
-                            <div class="px-3 py-2 border-b border-slate-50 dark:border-slate-700 mb-1">
-                                <p class="text-[10px] text-slate-400 font-bold uppercase">Account</p>
-                                <p id="nav-user-name" class="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">Loading...</p>
-                            </div>
-                            <button onclick="navigate('profile'); toggleNavMenu()" class="w-full text-left px-3 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg transition"><i class="fa-regular fa-user mr-2 text-xs"></i> My Profile</button>
-                            <button onclick="logout()" class="w-full text-left px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"><i class="fa-solid fa-power-off mr-2 text-xs"></i> Logout</button>
-                        </div>
+                <div id="nav-dropdown" class="hidden absolute right-0 mt-3 w-56 glass-ca rounded-xl border border-slate-100 dark:border-gemini-border shadow-2xl p-2 z-50 fade-in bg-white dark:bg-[#1e1f20]">
+                    <div class="px-3 py-2 border-b border-slate-100 dark:border-gemini-border/50 mb-1">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase">Signed in as</p>
+                        <p id="nav-user-name" class="text-sm font-bold text-slate-700 dark:text-white truncate">User</p>
                     </div>
+                    
+                    <button onclick="toggleTheme()" class="w-full text-left px-3 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#333537] rounded-lg transition flex items-center justify-between">
+                        <span>Dark Mode</span>
+                        <i id="theme-icon-dash" class="fa-solid fa-moon"></i> 
+                    </button>
+
+                    <button onclick="navigate('profile'); toggleNavMenu()" class="w-full text-left px-3 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#333537] rounded-lg transition"><i class="fa-regular fa-id-card mr-2"></i> My Profile</button>
+                    
+                    <div class="border-t border-slate-100 dark:border-gemini-border/50 my-1"></div>
+                    
+                    <button onclick="logout()" class="w-full text-left px-3 py-2 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"><i class="fa-solid fa-power-off mr-2"></i> Logout</button>
                 </div>
             </div>
-        </nav>
+        </div>
+    </div>
+</nav>
+
+
 
         <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-8">
-            
             <div id="view-home" class="fade-in">
-
-                <div id="plugin-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    </div>
+                <div id="plugin-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </div>
 
             <div id="view-profile" class="hidden fade-in grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <aside class="lg:col-span-4 space-y-6">
-                    <div class="glass-card rounded-[2rem] p-6 relative">
+                    <div class="rounded-[2rem] p-6 relative">
                         <div class="absolute top-6 right-6 flex gap-2 z-10">
                             <button onclick="toggleSecurity()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-center"><i class="fa-solid fa-lock text-xs"></i></button>
                             <button onclick="toggleEdit()" class="w-9 h-9 rounded-full bg-blue-50 dark:bg-slate-700 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
@@ -134,22 +146,22 @@
                             </a>
                         </div>
                     </div>
-                    <div class="glass-card rounded-[1.5rem] p-5 mb-6">
-    <div class="flex items-center justify-between mb-3">
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Username</span>
-        <button onclick="changeUsername()" class="text-[10px] font-bold text-blue-600 hover:underline">Change</button>
-    </div>
-    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-2 rounded-xl border dark:border-slate-700">
-        <span class="text-slate-400 font-bold text-xs pl-1">@</span>
-        <input type="text" id="username-input" readonly class="bg-transparent border-none outline-none text-slate-600 dark:text-slate-300 font-bold text-xs w-full truncate" value="...">
-        <button onclick="copyUsername()" class="text-slate-400 hover:text-blue-500 px-1" title="Copy Username">
-            <i class="fa-regular fa-copy"></i>
-        </button>
-    </div>
-</div>
+                    
+                    <div class="rounded-[1.5rem] p-5 mb-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Username</span>
+                            <button onclick="changeUsername()" class="text-[10px] font-bold text-blue-600 hover:underline">Change</button>
+                        </div>
+                        <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-2 rounded-xl border dark:border-slate-700">
+                            <span class="text-slate-400 font-bold text-xs pl-1">@</span>
+                            <input type="text" id="username-input" readonly class="bg-transparent border-none outline-none text-slate-600 dark:text-slate-300 font-bold text-xs w-full truncate" value="...">
+                            <button onclick="copyUsername()" class="text-slate-400 hover:text-blue-500 px-1" title="Copy Username">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
 
-
-                    <div class="glass-card rounded-[1.5rem] p-5">
+                    <div class="rounded-[1.5rem] p-5">
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"> API</span>
                             <button onclick="generateKey()" class="text-[10px] font-bold text-blue-600 hover:underline">Change</button>
@@ -162,7 +174,7 @@
                 </aside>
 
                 <section class="lg:col-span-8 space-y-6">
-                    <div id="profile-details" class="glass-card rounded-[2.5rem] p-8 fade-in">
+                    <div id="profile-details" class="rounded-[2.5rem] p-8 fade-in">
                         <h3 class="font-bold text-lg text-slate-800 dark:text-white mb-6 flex items-center gap-2"><i class="fa-regular fa-id-card text-blue-500"></i> Personal Info</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="profile-field sm:col-span-2"><div class="field-icon bg-blue-50 dark:bg-slate-900 text-blue-600"><i class="fa-regular fa-user"></i></div><div><span class="info-label">Full Name</span><p id="v-name" class="info-value"></p></div></div>
@@ -184,14 +196,28 @@
                         </div>
                     </div>
 
-                    <div id="profile-edit" class="hidden glass-card rounded-[2.5rem] p-8 fade-in space-y-5">
+                    <div id="profile-edit" class="hidden rounded-[2.5rem] p-8 fade-in space-y-5">
                         <h3 class="font-bold text-lg text-slate-800 dark:text-white">Edit Profile</h3>
                         <div class="space-y-4">
                             <div class="input-group"><input type="text" id="e-name" placeholder="Full Name" class="modern-input"><i class="fa-regular fa-user input-icon"></i></div>
+                            
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="input-group"><input type="text" id="e-post" placeholder="Designation" class="modern-input"><i class="fa-solid fa-briefcase input-icon"></i></div>
-                                <div class="input-group relative"><select id="e-pbs" class="modern-select !pl-12"><option value="" disabled selected>Select PBS</option></select><i class="fa-solid fa-building-columns input-icon"></i><i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i></div>
+                                <div class="input-group relative">
+                                    <select id="e-post" class="modern-select !pl-12">
+                                        <option value="" disabled selected>Select Designation</option>
+                                    </select>
+                                    <i class="fa-solid fa-briefcase input-icon"></i>
+                                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                </div>
+                                <div class="input-group relative">
+                                    <select id="e-pbs" class="modern-select !pl-12">
+                                        <option value="" disabled selected>Select PBS</option>
+                                    </select>
+                                    <i class="fa-solid fa-building-columns input-icon"></i>
+                                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                </div>
                             </div>
+                            
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="input-group"><input type="text" id="e-office" placeholder="Office Name" class="modern-input"><i class="fa-regular fa-building input-icon"></i></div>
                                 <div class="input-group"><input type="text" id="e-district" placeholder="Own District" class="modern-input"><i class="fa-solid fa-map-pin input-icon"></i></div>
@@ -226,34 +252,52 @@
         </main>
     </div>
 
-    <script src="config.js"></script>
+    
+      
+<script src="config.js"></script>
     <script src="auth.js"></script>
     <script src="profile.js"></script>
     <script src="card_employ_list.js"></script>
     <script src="dashboard.js"></script>
 
     <script>
-        // MAIN INIT SCRIPT (Connects everything)
-        // index.html এর <script> সেকশনে window.onload আপডেট করুন
+        // MAIN INIT SCRIPT
+        window.onload = async function() {
+            populatePbs(); 
+            initTheme();
+            
+            // 1. Google Session Check
+            await handleGoogleSession(); 
+            
+            // 2. Check Login Status & Load Profile
+            // এখানে আমরা সরাসরি প্রোফাইল লোড করার চেষ্টা করব।
+            // যদি ইউজার লগইন না থাকে, loadUserProfile() এরর থ্রো করবে এবং আমরা ক্যাচ ব্লকে লগিন পেজ দেখাব।
+            try {
+                // loadUserProfile() ফাংশনটি profile.js এ আছে এবং এটি account.get() ব্যবহার করে
+                const userData = await loadUserProfile();
+                
+                // সফল হলে ড্যাশবোর্ড দেখাবে
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                
+                initDashboard(userData); 
 
-window.onload = async function() {
-    populatePbs(); 
-    initTheme();
-    
-  
-    await handleGoogleSession(); 
-    
-    
-    await checkSession();
+            } catch (e) {
+                // সেশন না থাকলে (401 error) লগিন পেজ দেখাবে
+                console.log("No Active Session:", e.message);
+                document.getElementById('auth-section').classList.remove('hidden');
+                document.getElementById('dashboard-section').classList.add('hidden');
+            }
 
-    document.addEventListener('click', e => {
-        const drop = document.getElementById('nav-dropdown');
-        const btn = document.getElementById('nav-profile-btn');
-        if (drop && !drop.contains(e.target) && !btn.contains(e.target)) {
-            drop.classList.add('hidden');
-        }
-    });
-};
+            // Dropdown Close Logic
+            document.addEventListener('click', e => {
+                const drop = document.getElementById('nav-dropdown');
+                const btn = document.getElementById('nav-profile-btn');
+                if (drop && !drop.contains(e.target) && !btn.contains(e.target)) {
+                    drop.classList.add('hidden');
+                }
+            });
+        };
 
         // Theme Logic
         function initTheme() { 
@@ -263,45 +307,34 @@ window.onload = async function() {
         function toggleTheme() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); localStorage.theme = isDark ? 'dark' : 'light'; updateIcons(isDark); }
         function updateIcons(isDark) { const cls = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; if(document.getElementById('theme-icon-auth')) document.getElementById('theme-icon-auth').className = cls; if(document.getElementById('theme-icon-dash')) document.getElementById('theme-icon-dash').className = cls; }
 
-        // ✅ UPDATED NAVIGATE FUNCTION (Fixes overlapping issue)
-function navigate(view) { 
-    // ১. মেইন কন্টেইনারের ভেতরের সব ভিউ (Home, Profile, Directory) হাইড করা
-    const mainContent = document.querySelector('main');
-    Array.from(mainContent.children).forEach(child => {
-        if (child.id && child.id.startsWith('view-')) {
-            child.classList.add('hidden');
+        // Navigation Helper
+        function navigate(view) { 
+            const mainContent = document.querySelector('main');
+            Array.from(mainContent.children).forEach(child => {
+                if (child.id && child.id.startsWith('view-')) {
+                    child.classList.add('hidden');
+                }
+            });
+            const target = document.getElementById(`view-${view}`);
+            if(target) target.classList.remove('hidden');
         }
-    });
-
-    // ২. স্পেসিফিক ভিউ ওপেন করা
-    const target = document.getElementById(`view-${view}`);
-    if(target) {
-        target.classList.remove('hidden');
-    }
-}
 
         function toggleNavMenu() { document.getElementById('nav-dropdown').classList.toggle('hidden'); }
-        function populatePbs() { const s = document.getElementById('e-pbs'); PBS_LIST.forEach(p => { const o = document.createElement('option'); o.value = p; o.text = p; s.add(o); }); }
-
-        // Check Session & Route
-        async function checkSession() {
-            const token = getToken();
-            if (!token) {
-                document.getElementById('auth-section').classList.remove('hidden');
-                document.getElementById('dashboard-section').classList.add('hidden');
-                return;
-            }
-            try {
-                const user = await apiCall('/me');
-                document.getElementById('auth-section').classList.add('hidden');
-                document.getElementById('dashboard-section').classList.remove('hidden');
-                initDashboard(user); 
-                populateProfileUI(user);
-            } catch (e) {
-                console.error("Session check failed", e);
-                document.getElementById('auth-section').classList.remove('hidden');
+        
+        // PBS List Populator (if not already handled)
+        function populatePbs() { 
+            const s = document.getElementById('e-pbs'); 
+            if(typeof PBS_LIST !== 'undefined' && s) {
+                s.innerHTML = '<option value="" disabled selected>Select PBS</option>';
+                PBS_LIST.forEach(p => { 
+                    const o = document.createElement('option'); o.value = p; o.text = p; s.add(o); 
+                });
             }
         }
     </script>
+
+
+
+
 </body>
 </html>

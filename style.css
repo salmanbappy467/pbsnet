@@ -1,75 +1,201 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
+/* --- MAIN BODY & FONTS --- */
 body { 
     font-family: 'Inter', sans-serif; 
     background-color: #f3f4f6; 
+    color: #1f2937;
     transition: background-color 0.3s, color 0.3s;
 }
 
+/* Gemini Dark Mode Base */
+.dark body { 
+    background-color: #131314; /* Main Background */
+    color: #e3e3e3; /* Primary Text */
+}
 
-.dark body { background-color: #0f172a; color: #f8fafc; }
-
-/* Modern Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+/* --- SCROLLBAR (Gemini Style) --- */
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-.dark ::-webkit-scrollbar-thumb { background: #334155; }
 
-/* GLASS CARD */
+.dark ::-webkit-scrollbar-thumb { 
+    background: #444746; /* Gemini Border Color */
+}
+.dark ::-webkit-scrollbar-thumb:hover { 
+    background: #a8c7fa; /* Accent Hover */
+}
+
+/* --- GLASS CARD (Gemini Surface) --- */
 .glass-card { 
-    background: rgba(255, 255, 255, 0.85); 
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5); 
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); 
-    transition: all 0.3s ease;
+    background: #ffffff; 
+    border: 1px solid #e5e7eb; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+    transition: all 0.2s ease;
 }
 
 .dark .glass-card {
-    background: rgba(30, 41, 59, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    background: #1e1f20 !important; /* Surface Color */
+    border: 1px solid #444746 !important; /* Subtle Border */
+    box-shadow: none !important;
+    color: #e3e3e3;
 }
 
-/* INPUTS */
+-/* Card custom */
+.glass-ca { 
+    background: #ffffff; 
+    border: 1px solid #e5e7eb; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+    transition: all 0.2s ease;
+}
+
+
+.dark .glass-ca {
+    background: #1e1f20 !important; /* Surface Color */
+    border: 1px solid #444746 !important; /* Subtle Border */
+    box-shadow: none !important;
+    color: #e3e3e3;
+}
+
+
+
+
+
+/* --- INPUTS & SELECTS --- */
 .input-group { position: relative; transition: all 0.3s ease; }
 .input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; transition: color 0.3s; }
 
 .modern-input, .modern-select { 
     width: 100%; padding: 14px 16px 14px 48px; border-radius: 12px; 
-    border: 1px solid #e2e8f0; outline: none; transition: all 0.3s; 
+    border: 1px solid #e2e8f0; outline: none; transition: all 0.2s; 
     font-size: 14px; color: #334155; background: #f8fafc; 
 }
+
+/* Gemini Input Style */
 .dark .modern-input, .dark .modern-select {
-    background: #1e293b; border-color: #334155; color: #e2e8f0;
+    background: #2e2f30; /* Input Background */
+    border-color: transparent;
+    color: #e3e3e3;
 }
 
 .modern-input:focus, .modern-select:focus { 
-    border-color: #3b82f6; background: white; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); 
+    border-color: #3b82f6; background: white; 
 }
+
 .dark .modern-input:focus, .dark .modern-select:focus {
-    background: #0f172a; border-color: #60a5fa; box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.1);
+    background: #2e2f30;
+    border-color: #a8c7fa; /* Focus Accent */
+    box-shadow: 0 0 0 1px #a8c7fa;
 }
 
 .modern-input:focus + .input-icon { color: #3b82f6; }
-.dark .modern-input:focus + .input-icon { color: #60a5fa; }
+.dark .modern-input:focus + .input-icon { color: #a8c7fa; }
 
-/* PROFILE FIELDS */
+/* --- PROFILE FIELDS --- */
 .profile-field { 
     display: flex; align-items: center; gap: 12px; padding: 12px; 
     border-radius: 12px; background: #f8fafc; border: 1px solid #f1f5f9; 
     transition: all 0.3s;
 }
-.dark .profile-field { background: #1e293b; border-color: #334155; }
+
+.dark .profile-field { 
+    background: #1e1f20; /* Surface */
+    border-color: #444746; /* Border */
+}
 
 .field-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 16px; flex-shrink: 0; }
 
 .info-label { font-size: 10px; font-weight: bold; text-transform: uppercase; color: #94a3b8; display: block; margin-bottom: 2px; }
-.dark .info-label { color: #64748b; }
+.dark .info-label { color: #c4c7c5; /* Secondary Text */ }
 
 .info-value { font-size: 14px; font-weight: bold; color: #334155; }
-.dark .info-value { color: #f1f5f9; }
+.dark .info-value { color: #e3e3e3; /* Primary Text */ }
 
-/* ANIMATIONS */
+/* --- ANIMATIONS --- */
 #toast { transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
 .fade-in { animation: fadeIn 0.4s ease-out forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- CARD CATEGORY BADGE (Pill Shape) --- */
+.card-category {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 99px; 
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.dark .card-category {
+    background-color: #2e2f30; /* Badge BG */
+    color: #a8c7fa; /* Accent Text */
+    border: 1px solid #444746;
+}
+
+.card-category:hover {
+    background-color: #e2e8f0;
+    color: #334155;
+    transform: translateY(-1px);
+}
+
+.dark .card-category:hover {
+    background-color: #333537;
+    color: #ffffff;
+    border-color: #a8c7fa;
+}
+
+
+
+/* style.css এর নিচের অংশটুকু আপডেট করুন বা নতুন করে যোগ করুন */
+
+/* --- PROFILE FIELDS HOVER FIX --- */
+.profile-field { 
+    display: flex; align-items: center; gap: 12px; padding: 12px; 
+    border-radius: 12px; background: #f8fafc; border: 1px solid #f1f5f9; 
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.dark .profile-field { 
+    background: #1e1f20; /* Surface */
+    border-color: #444746; /* Border */
+}
+
+/* Hover Effect Added */
+.profile-field:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+
+.dark .profile-field:hover {
+    background: #2e2f30; /* Lighter on hover */
+    border-color: #a8c7fa; /* Accent Border */
+}
+
+/* --- EMPLOYEE CARD FOOTER (View Profile >>) --- */
+.card-footer-icon {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: transparent;
+    color: #94a3b8;
+    transition: all 0.3s ease;
+}
+
+.dark .card-footer-icon { color: #444746; }
+
+/* Group Hover Effect for Card */
+.group:hover .card-footer-icon {
+    background: #3b82f6;
+    color: white;
+    transform: translateX(5px); /* Slide Right */
+}
+
+.dark .group:hover .card-footer-icon {
+    background: #a8c7faa8;
+    color: #131314;
+}
