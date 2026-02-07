@@ -46,10 +46,16 @@ async function handleRegister() {
 
     toggleLoader(true);
     try {
+        // ১. একাউন্ট তৈরি
         const user = await account.create(Appwrite.ID.unique(), email, password, name);
+        // ২. সেশন তৈরি (লগিন)
         await account.createEmailPasswordSession(email, password);
 
-        // প্রোফাইল তৈরি
+        // ৩. ইউনিক ইউজারনেম এবং API Key জেনারেট
+        const finalUsername = await getUniqueUsername(name); // এখানে নতুন ফাংশন কল করা হলো
+        const autoApiKey = 'pbsnet-' + Math.random().toString(36).substring(2, 18);
+
+        // ৪. প্রোফাইল সেভ
         await databases.createDocument(
             DB_ID, 
             COLL_PROFILE, 
@@ -57,11 +63,13 @@ async function handleRegister() {
             {
                 full_name: name,
                 email: email,
+                username: finalUsername,
+                api_key: autoApiKey,
                 personal_json: "{}"
             }
         );
 
-        showToast("Account Created!");
+        showToast(`Account Created! Username: ${finalUsername}`);
         location.reload();
     } catch(err) { 
         showToast(err.message, 'error'); 
@@ -89,9 +97,16 @@ async function handleGoogleSession() {
         } catch (e) {
             if(e.code === 404) {
                 toggleLoader(true);
+
+                // ১. ইউনিক ইউজারনেম এবং কী জেনারেট
+                const finalUsername = await getUniqueUsername(user.name); // নতুন ফাংশন ব্যবহার
+                const autoApiKey = 'pbsnet-' + Math.random().toString(36).substring(2, 18);
+
                 await databases.createDocument(DB_ID, COLL_PROFILE, user.$id, {
                     full_name: user.name,
                     email: user.email,
+                    username: finalUsername,
+                    api_key: autoApiKey,
                     personal_json: "{}"
                 });
                 toggleLoader(false);
@@ -115,6 +130,44 @@ async function sendRecoveryEmail() {
         switchTab('login');
     } catch(e) { showToast(e.message, 'error'); }
 }
+
+
+// --- HELPER: Unique Username Generator ---
+async function getUniqueUsername(fullName) {
+    const cleanName = fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    
+    try {
+        // ১. প্রথমে ক্লিন নামটি চেক করি
+        const check = await databases.listDocuments(
+            DB_ID, 
+            COLL_PROFILE, 
+            [Appwrite.Query.equal('username', cleanName)]
+        );
+
+        // ২. যদি কেউ এই নাম না নিয়ে থাকে (total = 0), তাহলে এটিই রিটার্ন করুন
+        if (check.total === 0) {
+            return cleanName;
+        }
+    } catch (e) {
+        console.log("Unique check failed, falling back to random.");
+    }
+
+    // ৩. যদি নাম নেওয়া থাকে, তাহলে র‍্যান্ডম সংখ্যা যুক্ত করুন
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    return `${cleanName}${randomSuffix}`;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 function switchTab(m) {
     document.getElementById('login-form').classList.toggle('hidden', m !== 'login');

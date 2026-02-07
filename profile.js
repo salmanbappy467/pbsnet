@@ -192,6 +192,7 @@ async function uploadImage() {
 }
 
 // --- OTHER ACTIONS ---
+/*
 async function changeUsername() {
     const newUser = prompt("Enter username (lowercase, no spaces):");
     if (!newUser) return;
@@ -210,6 +211,7 @@ async function changeUsername() {
     } catch (e) { showToast(e.message, 'error'); } 
     finally { toggleLoader(false); }
 }
+*/
 
 function copyUsername() {
     const txt = document.getElementById('username-input').value;

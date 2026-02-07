@@ -199,3 +199,15 @@ body {
     background: #a8c7faa8;
     color: #131314;
 }
+
+
+/* --- UTILITIES --- */
+/* Hide Scrollbar but keep functionality */
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;  
+    scrollbar-width: none; 
+}

@@ -14,47 +14,6 @@ const appPlugins = [
         category: 'General',
         allowedPosts: ['All'],
         action: () => DirectoryApp.initView() // From card_employ_list.js
-    },
-    {
-        id: 'billing_sys',
-        title: 'Billing System',
-        icon: 'fa-solid fa-file-invoice-dollar',
-        color: 'bg-blue-100 text-blue-600',
-        desc: 'Manage centralized billing.',
-        category: 'Finance',
-        allowedPosts: ['AGM', 'DGM', 'Admin', 'JE', 'All'],
-        action: () => window.open('https://billing.pbsnet.com', '_blank')
-    },
-    {
-        id: 'hr_management',
-        title: 'HR Management',
-        icon: 'fa-solid fa-users-gear',
-        color: 'bg-purple-100 text-purple-600',
-        desc: 'Employee records & transfers.',
-        category: 'Admin',
-        allowedPosts: ['AGM (HR)', 'DGM', 'Admin'],
-        badge: 3, // Example Notification Badge
-        action: () => alert('Opening HR System...')
-    },
-    {
-        id: 'dns_manager',
-        title: 'DNS Manager',
-        icon: 'fa-solid fa-server',
-        color: 'bg-orange-100 text-orange-600',
-        desc: 'Control Dynamic DNS.',
-        category: 'IT',
-        allowedPosts: ['AGM (IT)', 'JE (IT)', 'Admin'],
-        action: () => alert('Opening DNS Manager...')
-    },
-    {
-        id: 'store_inventory',
-        title: 'Store Inventory',
-        icon: 'fa-solid fa-boxes-stacked',
-        color: 'bg-green-100 text-green-600',
-        desc: 'Stock and requisition.',
-        category: 'Logistics',
-        allowedPosts: ['Store Keeper', 'Admin'],
-        action: () => alert('Opening Store...')
     }
 ];
 
@@ -82,7 +41,7 @@ async function initDashboard(user) {
                 
             </div>
             
-            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-end" id="category-tabs">
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-start md:justify-end" id="category-tabs">
                 </div>
         `;
         // Insert after header, before grid
