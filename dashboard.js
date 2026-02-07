@@ -14,7 +14,18 @@ const appPlugins = [
         category: 'General',
         allowedPosts: ['All'],
         action: () => DirectoryApp.initView() // From card_employ_list.js
-    }
+    },
+    // dashboard.js এর appPlugins সেকশনে এটি যোগ করুন
+   {
+    id: 'rebpbs_automation',
+    title: 'REBPBS Automation',
+    icon: 'fa-solid fa-robot',
+    color: 'bg-rose-100 text-rose-600',
+    desc: 'Automate your tasks with REBPBS tool.',
+    category: 'Automation',
+    allowedPosts: ['MT', 'MTS'], // শুধুমাত্র MT এবং Admin পোস্টের জন্য    
+    action: () => RebpbsApp.initView() // এটি নতুন ভিউ ওপেন করবে
+     },
 ];
 
 // --- 2. STATE MANAGEMENT ---
