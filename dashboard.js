@@ -26,6 +26,16 @@ const appPlugins = [
     allowedPosts: ['MT', 'MTS'], // শুধুমাত্র MT এবং Admin পোস্টের জন্য    
     action: () => RebpbsApp.initView() // এটি নতুন ভিউ ওপেন করবে
      },
+    {
+        id: 'meter_test',
+        title: 'Meter Test Bench',
+        icon: 'fa-solid fa-tachometer-alt',
+        color: 'bg-indigo-100 text-indigo-600',
+        desc: 'Advanced Smart Electric Meter Calibration Tool.',
+        category: 'Tools',
+        allowedPosts: ['All'],
+        action: () => MeterTestBenchApp.initView()
+    }
 ];
 
 // --- 2. STATE MANAGEMENT ---
@@ -186,4 +196,5 @@ function toggleFavorite(e, appId) {
     
     localStorage.setItem('pbs_fav_apps', JSON.stringify(dashboardState.favorites));
     renderCards(); // Re-sort and render
+
 }
