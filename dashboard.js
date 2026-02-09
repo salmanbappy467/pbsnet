@@ -28,10 +28,10 @@ const appPlugins = [
      },
     {
         id: 'meter_test',
-        title: 'Meter Test Bench',
+        title: 'Meter Test Calculetor',
         icon: 'fa-solid fa-tachometer-alt',
         color: 'bg-indigo-100 text-indigo-600',
-        desc: 'Advanced Smart Electric Meter Calibration Tool.',
+        desc: 'Advanced Smart Electric Meter Error accreccy calculator.',
         category: 'Tools',
         allowedPosts: ['All'],
         action: () => MeterTestBenchApp.initView()
@@ -198,3 +198,4 @@ function toggleFavorite(e, appId) {
     renderCards(); // Re-sort and render
 
 }
+
