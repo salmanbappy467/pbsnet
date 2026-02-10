@@ -38,10 +38,10 @@ const MeterTestBenchApp = {
                 </div>
 
                 <div class="flex justify-center gap-4 mb-8">
-                    <button onclick="MeterTestBenchApp.presetLoad(240, 1)" class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold shadow-lg shadow-yellow-500/30 transition">
+                    <button onclick="MeterTestBenchApp.presetLoad(240, 1)" class="flex items-center gap-2 px-5 py-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold shadow-lg shadow-yellow-500/30 transition">
                         <i class="fa-regular fa-lightbulb"></i> Light Load (1A)
                     </button>
-                    <button onclick="MeterTestBenchApp.presetLoad(240, 10)" class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-orange-600 hover:bg-orange-700 text-white font-bold shadow-lg shadow-orange-600/30 transition">
+                    <button onclick="MeterTestBenchApp.presetLoad(240, 10)" class="flex items-center gap-2 px-5 py-2 rounded-full bg-orange-600 hover:bg-orange-700 text-white font-bold shadow-lg shadow-orange-600/30 transition">
                         <i class="fa-solid fa-bolt"></i> Full Load (10A)
                     </button>
                 </div>
@@ -97,7 +97,7 @@ const MeterTestBenchApp = {
                                 </div>
                                 <div>
                                     <label class="text-[10px] font-bold text-slate-400 uppercase">Target Pulse</label>
-                                    <input type="number" id="mt-pulse" value="5" oninput="MeterTestBenchApp.logicSpec('pulse')" class="modern-input font-bold">
+                                    <input type="number" id="mt-pulse" value="1" oninput="MeterTestBenchApp.logicSpec('pulse')" class="modern-input font-bold">
                                 </div>
                             </div>
                         </div>
@@ -105,7 +105,7 @@ const MeterTestBenchApp = {
 
                     <div class="glass-card p-6 rounded-2xl border-t-4 border-t-purple-500">
                         <h3 class="font-bold text-slate-700 dark:text-slate-200 mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-scale-balanced text-purple-500"></i> Reference Meter
+                            <i class="fa-solid fa-scale-balanced text-purple-500"></i> Sub-Standerd Meter
                         </h3>
                         <div class="space-y-4">
                             <div>

@@ -23,8 +23,8 @@ const appPlugins = [
     color: 'bg-rose-100 text-rose-600',
     desc: 'Automate your tasks with REBPBS tool.',
     category: 'Automation',
-    allowedPosts: ['MT', 'MTS'], // শুধুমাত্র MT এবং Admin পোস্টের জন্য    
-    action: () => RebpbsApp.initView() // এটি নতুন ভিউ ওপেন করবে
+    allowedPosts: ['MT', 'MTS'],     
+    action: () => RebpbsApp.initView() 
      },
     {
         id: 'meter_test',
@@ -35,6 +35,16 @@ const appPlugins = [
         category: 'Tools',
         allowedPosts: ['All'],
         action: () => MeterTestBenchApp.initView()
+    },
+    {
+        id: 'pfi_calculator',
+        title: 'PFI Calculator',
+        icon: 'fa-solid fa-calculator',
+        color: 'bg-emerald-100 text-emerald-600',
+        desc: 'Calculate Power Factor & Load Analysis.',
+        category: 'Tools',
+        allowedPosts: ['All'],
+        action: () => PfiCalculatorApp.initView()
     }
 ];
 
