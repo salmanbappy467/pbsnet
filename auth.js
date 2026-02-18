@@ -78,41 +78,59 @@ async function handleRegister() {
     }
 }
 
-// ৩. গুগল লগিন
+// ৩. গুগল লগিন (Mobile Optimized)
 function googleLogin() {
     try {
-        account.createOAuth2Session('google', window.location.origin, window.location.origin);
-    } catch(e) { showToast("Error: " + e.message, 'error'); }
+        // window.location.origin এর পরিবর্তে href ব্যবহার করা হচ্ছে এবং ট্রেইলিং স্লাশ বা কোয়েরি বাদ দেওয়া হচ্ছে
+        const currentUrl = window.location.href.split('#')[0].split('?')[0]; 
+        
+        // OAuth2 Session তৈরি
+        account.createOAuth2Session('google', currentUrl, currentUrl);
+    } catch(e) { 
+        showToast("Error: " + e.message, 'error'); 
+    }
 }
 
 // ৪. গুগল সেশন হ্যান্ডলার
+// auth.js এর handleGoogleSession আপডেট
+
 async function handleGoogleSession() {
     try {
         const session = await account.getSession('current');
         if(!session) return;
 
         const user = await account.get();
+        
+        // চেক করুন ইউজার প্রোফাইল ডাটাবেসে আছে কিনা
         try {
             await databases.getDocument(DB_ID, COLL_PROFILE, user.$id);
         } catch (e) {
+            // 404 মানে প্রোফাইল নেই, তাই নতুন বানাতে হবে
             if(e.code === 404) {
                 toggleLoader(true);
+                try {
+                     const finalUsername = await getUniqueUsername(user.name);
+                     const autoApiKey = 'pbsnet-' + Math.random().toString(36).substring(2, 18);
 
-                // ১. ইউনিক ইউজারনেম এবং কী জেনারেট
-                const finalUsername = await getUniqueUsername(user.name); // নতুন ফাংশন ব্যবহার
-                const autoApiKey = 'pbsnet-' + Math.random().toString(36).substring(2, 18);
-
-                await databases.createDocument(DB_ID, COLL_PROFILE, user.$id, {
-                    full_name: user.name,
-                    email: user.email,
-                    username: finalUsername,
-                    api_key: autoApiKey,
-                    personal_json: "{}"
-                });
-                toggleLoader(false);
+                     await databases.createDocument(DB_ID, COLL_PROFILE, user.$id, {
+                        full_name: user.name,
+                        email: user.email,
+                        username: finalUsername,
+                        api_key: autoApiKey,
+                        personal_json: "{}"
+                    });
+                    showToast("Profile initialized!");
+                } catch(createErr) {
+                    console.error("Profile Create Error:", createErr);
+                } finally {
+                    toggleLoader(false);
+                }
             }
         }
-    } catch (e) { /* No session */ }
+    } catch (e) { 
+        // নো সেশন, মানে লগিন নেই। কিছু করার দরকার নেই।
+        console.log("No active Google session");
+    }
 }
 
 // ৫. রিকভারি

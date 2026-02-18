@@ -252,89 +252,114 @@
     </div>
 
     
-      
-<script src="config.js"></script>
-    <script src="auth.js"></script>
-    <script src="profile.js"></script>
-    <script src="card_employ_list.js"></script>
-    <script src="meter_test_bench.js"></script>
-      <script src="rebpbs_automation.js"></script>
-      <script src="pfi_calculator.js"></script>
-    <script src="dashboard.js"></script>
-  
+    <script src="config.js" defer></script>
+<script src="auth.js" defer></script>
+<script src="profile.js" defer></script>
+<script src="card_employ_list.js" defer></script>
+<script src="meter_test_bench.js" defer></script>
+<script src="rebpbs_automation.js" defer></script>
+<script src="pfi_calculator.js" defer></script>
+<script src="dashboard.js" defer></script>
 
-    <script>
-        // MAIN INIT SCRIPT
-        window.onload = async function() {
-            populatePbs(); 
+<script>
+    // ✅ ফিক্স ১: window.onload এর বদলে DOMContentLoaded ব্যবহার (দ্রুত লোডিংয়ের জন্য)
+    document.addEventListener('DOMContentLoaded', async function() {
+        
+        // ১. শুরুতেই লোডার দেখান
+        const loader = document.getElementById('global-loader');
+        if(loader) loader.classList.remove('hidden');
+
+        try {
+            // ২. বেসিক সেটআপ (থিম, লিস্ট ইত্যাদি)
             initTheme();
-            
-            // 1. Google Session Check
+            if(typeof populatePbs === 'function') populatePbs(); 
+
+            // ৩. সেশন এবং ইউজার ডাটা প্যারালাল (Parallel) চেক করুন
             await handleGoogleSession(); 
             
-            // 2. Check Login Status & Load Profile
-            // এখানে আমরা সরাসরি প্রোফাইল লোড করার চেষ্টা করব।
-            // যদি ইউজার লগইন না থাকে, loadUserProfile() এরর থ্রো করবে এবং আমরা ক্যাচ ব্লকে লগিন পেজ দেখাব।
-            try {
-                // loadUserProfile() ফাংশনটি profile.js এ আছে এবং এটি account.get() ব্যবহার করে
-                const userData = await loadUserProfile();
-                
-                // সফল হলে ড্যাশবোর্ড দেখাবে
-                document.getElementById('auth-section').classList.add('hidden');
-                document.getElementById('dashboard-section').classList.remove('hidden');
-                
-                initDashboard(userData); 
-
-            } catch (e) {
-                // সেশন না থাকলে (401 error) লগিন পেজ দেখাবে
-                console.log("No Active Session:", e.message);
-                document.getElementById('auth-section').classList.remove('hidden');
-                document.getElementById('dashboard-section').classList.add('hidden');
+            // সরাসরি প্রোফাইল লোড করার চেষ্টা
+            const userData = await loadUserProfile();
+            
+            // ৪. সফল হলে ড্যাশবোর্ড দেখান
+            const authSection = document.getElementById('auth-section');
+            const dashSection = document.getElementById('dashboard-section');
+            
+            if(authSection) authSection.classList.add('hidden');
+            if(dashSection) dashSection.classList.remove('hidden');
+            
+            // ড্যাশবোর্ড কার্ড রেন্ডার
+            if(typeof initDashboard === 'function') {
+                initDashboard(userData);
             }
 
-            // Dropdown Close Logic
-            document.addEventListener('click', e => {
-                const drop = document.getElementById('nav-dropdown');
-                const btn = document.getElementById('nav-profile-btn');
-                if (drop && !drop.contains(e.target) && !btn.contains(e.target)) {
-                    drop.classList.add('hidden');
-                }
-            });
-        };
-
-        // Theme Logic
-        function initTheme() { 
-            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark'); updateIcons(true); } 
-            else { document.documentElement.classList.remove('dark'); updateIcons(false); } 
-        }
-        function toggleTheme() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); localStorage.theme = isDark ? 'dark' : 'light'; updateIcons(isDark); }
-        function updateIcons(isDark) { const cls = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; if(document.getElementById('theme-icon-auth')) document.getElementById('theme-icon-auth').className = cls; if(document.getElementById('theme-icon-dash')) document.getElementById('theme-icon-dash').className = cls; }
-
-        // Navigation Helper
-        function navigate(view) { 
-            const mainContent = document.querySelector('main');
-            Array.from(mainContent.children).forEach(child => {
-                if (child.id && child.id.startsWith('view-')) {
-                    child.classList.add('hidden');
-                }
-            });
-            const target = document.getElementById(`view-${view}`);
-            if(target) target.classList.remove('hidden');
-        }
-
-        function toggleNavMenu() { document.getElementById('nav-dropdown').classList.toggle('hidden'); }
-        
-        // PBS List Populator (if not already handled)
-        function populatePbs() { 
-            const s = document.getElementById('e-pbs'); 
-            if(typeof PBS_LIST !== 'undefined' && s) {
-                s.innerHTML = '<option value="" disabled selected>Select PBS</option>';
-                PBS_LIST.forEach(p => { 
-                    const o = document.createElement('option'); o.value = p; o.text = p; s.add(o); 
-                });
+        } catch (e) {
+            console.log("User not logged in or error:", e.message);
+            // লগিন না থাকলে অথেনটিকেশন পেজ দেখান
+            const authSection = document.getElementById('auth-section');
+            const dashSection = document.getElementById('dashboard-section');
+            
+            if(dashSection) dashSection.classList.add('hidden');
+            if(authSection) authSection.classList.remove('hidden');
+        } finally {
+            // ৫. সবশেষে লোডার বন্ধ করুন
+            if(loader) {
+                loader.classList.add('opacity-0'); // ফেড আউট এফেক্ট
+                setTimeout(() => loader.classList.add('hidden'), 300);
             }
         }
-    </script>
+
+        // ড্রপডাউন মেনু বন্ধ করার লজিক
+        document.addEventListener('click', e => {
+            const drop = document.getElementById('nav-dropdown');
+            const btn = document.getElementById('nav-profile-btn');
+            if (drop && !drop.classList.contains('hidden') && !drop.contains(e.target) && !btn.contains(e.target)) {
+                drop.classList.add('hidden');
+            }
+        });
+    });
+
+    // Theme Logic (আগের মতোই)
+    function initTheme() { 
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { 
+            document.documentElement.classList.add('dark'); 
+            updateIcons(true); 
+        } else { 
+            document.documentElement.classList.remove('dark'); 
+            updateIcons(false); 
+        } 
+    }
+    
+    function toggleTheme() { 
+        document.documentElement.classList.toggle('dark'); 
+        const isDark = document.documentElement.classList.contains('dark'); 
+        localStorage.theme = isDark ? 'dark' : 'light'; 
+        updateIcons(isDark); 
+    }
+    
+    function updateIcons(isDark) { 
+        const cls = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; 
+        if(document.getElementById('theme-icon-auth')) document.getElementById('theme-icon-auth').className = cls; 
+        if(document.getElementById('theme-icon-dash')) document.getElementById('theme-icon-dash').className = cls; 
+    }
+
+    // Navigation Helper
+    function navigate(view) { 
+        const mainContent = document.querySelector('main');
+        // মেইন সেকশনের চাইল্ড এলিমেন্টগুলো লুপ করে হাইড করা
+        Array.from(mainContent.children).forEach(child => {
+            if (child.id && child.id.startsWith('view-')) {
+                child.classList.add('hidden');
+            }
+        });
+        const target = document.getElementById(`view-${view}`);
+        if(target) target.classList.remove('hidden');
+    }
+
+    function toggleNavMenu() { 
+        const drop = document.getElementById('nav-dropdown');
+        if(drop) drop.classList.toggle('hidden'); 
+    }
+</script>
 
 
 
