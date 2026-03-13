@@ -34,47 +34,86 @@
         <p class="text-slate-500 dark:text-slate-400 font-bold text-sm tracking-widest uppercase">Processing</p>
     </div>
 
-    <div id="auth-section" class="hidden flex-grow flex items-center justify-center p-6 bg-[url('https://img.freepik.com/free-vector/white-abstract-background-design_23-2148825582.jpg')] dark:bg-[url('https://img.freepik.com/free-vector/dark-hexagonal-background-with-gradient-color_79603-1409.jpg')] bg-cover bg-center transition-all duration-500">
-        <div class="glass-card p-10 rounded-[2rem] w-full max-w-[420px] shadow-2xl fade-in relative overflow-hidden">
-            <button onclick="toggleTheme()" class="absolute top-6 right-6 text-slate-400 hover:text-blue-600 dark:hover:text-yellow-400 transition"><i id="theme-icon-auth" class="fa-solid fa-moon text-lg"></i></button>
-
-            <div class="text-center mb-10">
-                <div class="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl mb-4 shadow-lg shadow-blue-500/30"><i class="fa-solid fa-fingerprint"></i></div>
-                <h1 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight">pbsNet</h1>
-                <p class="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-[0.2em] mt-1">Digital pbs Portal</p>
+    <div id="auth-section" class="hidden flex-grow flex flex-col items-center justify-center p-6 bg-[url('https://img.freepik.com/free-vector/white-abstract-background-design_23-2148825582.jpg')] dark:bg-[url('https://img.freepik.com/free-vector/dark-hexagonal-background-with-gradient-color_79603-1409.jpg')] bg-cover bg-center transition-all duration-500">
+        
+        <!-- Public App Info (Google Verification Requirement) -->
+        <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-10">
+            <div class="text-left space-y-6 fade-in">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    Central Identity for PBS
+                </div>
+                <h1 class="text-5xl lg:text-7xl font-black text-slate-900 dark:text-white leading-tight">
+                    Welcome to <span class="text-blue-600">pbsNet</span>
+                </h1>
+                <p class="text-lg text-slate-500 dark:text-slate-400 max-w-md leading-relaxed">
+                    The ultimate digital hub for PBS employees. Manage your identity, access powerful automation tools, and connect with your colleagues—all in one secure platform.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center shadow-sm"><i class="fa-solid fa-address-book text-sm"></i></div>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Employee Directory</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/30 text-orange-600 flex items-center justify-center shadow-sm"><i class="fa-solid fa-robot text-sm"></i></div>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Task Automation</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shadow-sm"><i class="fa-solid fa-shield-halved text-sm"></i></div>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Secure Identity Hub</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center shadow-sm"><i class="fa-solid fa-bolt text-sm"></i></div>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Fast & Efficient</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-6 border border-slate-200 dark:border-slate-700">
-                <button onclick="switchTab('login')" id="tab-login" class="flex-1 py-2.5 rounded-lg text-sm font-bold bg-white dark:bg-slate-700 shadow-sm transition-all text-slate-800 dark:text-white">Login</button>
-                <button onclick="switchTab('register')" id="tab-register" class="flex-1 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all">Register</button>
-            </div>
+            <!-- Login Card -->
+            <div class="glass-card p-10 rounded-[2.5rem] w-full max-w-[420px] shadow-2xl relative overflow-hidden ml-auto">
+                <button onclick="toggleTheme()" class="absolute top-6 right-6 text-slate-400 hover:text-blue-600 dark:hover:text-yellow-400 transition"><i id="theme-icon-auth" class="fa-solid fa-moon text-lg"></i></button>
 
-            <div id="login-form" class="space-y-4">
-                <div class="input-group"><input type="text" id="login-input" placeholder="Email or Phone Number" class="modern-input"><i class="fa-regular fa-user input-icon"></i></div>
-                <div class="input-group"><input type="password" id="login-pass" placeholder="Password" class="modern-input"><i class="fa-solid fa-lock input-icon"></i></div>
-                <div class="flex justify-end"><button onclick="showForgotUI()" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">Forgot Password?</button></div>
-                <button onclick="handleLogin()" class="w-full bg-slate-900 dark:bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-black dark:hover:bg-blue-700 transition shadow-lg active:scale-[0.98]">Login</button>
-            </div>
+                <div class="text-center mb-10">
+                    <div class="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl mb-4 shadow-lg shadow-blue-500/30"><i class="fa-solid fa-fingerprint"></i></div>
+                    <h2 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Login</h2>
+                    <p class="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-[0.2em] mt-1">Digital pbs Portal</p>
+                </div>
 
-            <div id="register-form" class="hidden space-y-4">
-                <div class="input-group"><input type="text" id="reg-name" placeholder="Full Name" class="modern-input"><i class="fa-regular fa-id-card input-icon"></i></div>
-                <div class="input-group"><input type="email" id="reg-email" placeholder="Email Address" class="modern-input"><i class="fa-regular fa-envelope input-icon"></i></div>
-                <div class="input-group"><input type="password" id="reg-pass" placeholder="Create Password" class="modern-input"><i class="fa-solid fa-key input-icon"></i></div>
-                <button onclick="handleRegister()" class="w-full bg-emerald-600 text-white py-3.5 rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg">Create Account</button>
-            </div>
+                <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-6 border border-slate-200 dark:border-slate-700">
+                    <button onclick="switchTab('login')" id="tab-login" class="flex-1 py-2.5 rounded-lg text-sm font-bold bg-white dark:bg-slate-700 shadow-sm transition-all text-slate-800 dark:text-white">Login</button>
+                    <button onclick="switchTab('register')" id="tab-register" class="flex-1 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-all">Register</button>
+                </div>
 
-            <div id="forgot-form" class="hidden space-y-4 text-center">
-                <div class="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl text-orange-600 dark:text-orange-400 text-xs font-medium">Link will be sent to your email.</div>
-                <div class="input-group"><input type="email" id="forgot-email" placeholder="Registered Email" class="modern-input"><i class="fa-regular fa-envelope input-icon"></i></div>
-                <button onclick="sendRecoveryEmail()" class="w-full bg-orange-500 text-white py-3.5 rounded-xl font-bold hover:bg-orange-600 transition">Send Reset Link</button>
-                <button onclick="switchTab('login')" class="text-xs text-slate-400 font-bold uppercase mt-4 hover:text-slate-600 dark:hover:text-slate-300">Cancel</button>
-            </div>
+                <div id="login-form" class="space-y-4">
+                    <div class="input-group"><input type="text" id="login-input" placeholder="Email or Phone Number" class="modern-input"><i class="fa-regular fa-user input-icon"></i></div>
+                    <div class="input-group"><input type="password" id="login-pass" placeholder="Password" class="modern-input"><i class="fa-solid fa-lock input-icon"></i></div>
+                    <div class="flex justify-end"><button onclick="showForgotUI()" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">Forgot Password?</button></div>
+                    <button onclick="handleLogin()" class="w-full bg-slate-900 dark:bg-blue-600 text-white py-3.5 rounded-xl font-bold hover:bg-black dark:hover:bg-blue-700 transition shadow-lg active:scale-[0.98]">Login</button>
+                </div>
 
-            <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700/50">
-                <button onclick="googleLogin()" class="w-full flex items-center justify-center gap-3 border border-slate-200 dark:border-slate-700 py-3 rounded-xl font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300 text-sm"><img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-5 h-5"> Google Login</button>
-            </div>
+                <div id="register-form" class="hidden space-y-4">
+                    <div class="input-group"><input type="text" id="reg-name" placeholder="Full Name" class="modern-input"><i class="fa-regular fa-id-card input-icon"></i></div>
+                    <div class="input-group"><input type="email" id="reg-email" placeholder="Email Address" class="modern-input"><i class="fa-regular fa-envelope input-icon"></i></div>
+                    <div class="input-group"><input type="password" id="reg-pass" placeholder="Create Password" class="modern-input"><i class="fa-solid fa-key input-icon"></i></div>
+                    <button onclick="handleRegister()" class="w-full bg-emerald-600 text-white py-3.5 rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg">Create Account</button>
+                </div>
 
-            <div class="mt-6 flex justify-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                <div id="forgot-form" class="hidden space-y-4 text-center">
+                    <div class="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl text-orange-600 dark:text-orange-400 text-xs font-medium">Link will be sent to your email.</div>
+                    <div class="input-group"><input type="email" id="forgot-email" placeholder="Registered Email" class="modern-input"><i class="fa-regular fa-envelope input-icon"></i></div>
+                    <button onclick="sendRecoveryEmail()" class="w-full bg-orange-500 text-white py-3.5 rounded-xl font-bold hover:bg-orange-600 transition">Send Reset Link</button>
+                    <button onclick="switchTab('login')" class="text-xs text-slate-400 font-bold uppercase mt-4 hover:text-slate-600 dark:hover:text-slate-300">Cancel</button>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700/50">
+                    <button onclick="googleLogin()" class="w-full flex items-center justify-center gap-3 border border-slate-200 dark:border-slate-700 py-3 rounded-xl font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300 text-sm"><img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="w-5 h-5"> Google Login</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer for Google Verification -->
+        <div class="flex flex-col items-center gap-4 text-center">
+            <div class="flex justify-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
                 <a href="privacy.html" class="hover:text-blue-500 transition">Privacy Policy</a>
                 <span>•</span>
                 <a href="terms.html" class="hover:text-blue-500 transition">Terms of Service</a>
