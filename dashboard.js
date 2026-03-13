@@ -27,6 +27,16 @@ const appPlugins = [
     action: () => RebpbsApp.initView() 
      },
     {
+        id: 'data3fez',
+        title: 'Data3Fez',
+        icon: 'fa-solid fa-database',
+        color: 'bg-blue-100 text-blue-600',
+        desc: 'Advanced Data Management & Sheet Connector.',
+        category: 'Automation',
+        allowedPosts: ['All'],
+        action: () => Data3FezApp.initView()
+    },
+    {
         id: 'meter_test',
         title: 'Meter Test Calculetor',
         icon: 'fa-solid fa-tachometer-alt',
