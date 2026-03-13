@@ -78,17 +78,10 @@ async function handleRegister() {
     }
 }
 
-// ৩. গুগল লগিন (Mobile Optimized)
+// ৩. গুগল লগিন (Mobile Optimized via Redirect)
 function googleLogin() {
-    try {
-        // window.location.origin এর পরিবর্তে href ব্যবহার করা হচ্ছে এবং ট্রেইলিং স্লাশ বা কোয়েরি বাদ দেওয়া হচ্ছে
-        const currentUrl = window.location.href.split('#')[0].split('?')[0]; 
-        
-        // OAuth2 Session তৈরি
-        account.createOAuth2Session('google', currentUrl, currentUrl);
-    } catch(e) { 
-        showToast("Error: " + e.message, 'error'); 
-    }
+    // সরাসরি নতুন তৈরি করা পেজে পাঠিয়ে দিচ্ছি যা অথেনটিকেশন শুরু করবে
+    window.location.href = "google-log.html";
 }
 
 // ৪. গুগল সেশন হ্যান্ডলার

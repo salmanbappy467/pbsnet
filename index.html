@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pbsNet</title>
+    <script>
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && !location.hostname.includes('192.168')) {
+            location.replace(`https:${location.href.substring(location.protocol.length)}`);
+        }
+    </script>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'><path fill='%233b82f6' d='M297.2 248.9C311.6 228.3 298.7 200 273.6 200H208V32c0-24.3-26.4-39.2-46.7-26.4L15.1 199.1c-16.6 10.4-11.3 36.3 7.8 39.8L104 256v192c0 23.9 26 38.8 46.5 26.8l146.7-225.9z'/></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
