@@ -93,6 +93,7 @@ async function handleGoogleSession() {
         if(!session) return;
 
         const user = await account.get();
+        let isNewProfile = false;
         
         // চেক করুন ইউজার প্রোফাইল ডাটাবেসে আছে কিনা
         try {
@@ -100,6 +101,7 @@ async function handleGoogleSession() {
         } catch (e) {
             // 404 মানে প্রোফাইল নেই, তাই নতুন বানাতে হবে
             if(e.code === 404) {
+                isNewProfile = true;
                 toggleLoader(true);
                 try {
                      const finalUsername = await getUniqueUsername(user.name);
@@ -116,10 +118,49 @@ async function handleGoogleSession() {
                 } catch(createErr) {
                     console.error("Profile Create Error:", createErr);
                 } finally {
-                    toggleLoader(false);
+                    // Loader বন্ধ করার দরকার নেই কারণ নিচে প্রোফাইল পিকচার ফেচ হবে
                 }
             }
         }
+
+        // ✅ AUTO FETCH GOOGLE PROFILE PICTURE
+        try {
+            const doc = await databases.getDocument(DB_ID, COLL_PROFILE, user.$id);
+            
+            // যদি ইউজারের কোনো ছবি না থাকে এবং সেশনটি Google এর হয়
+            if (!doc.profile_pic_id && session.provider === 'google' && session.providerAccessToken) {
+                toggleLoader(true);
+                
+                // ১. গুগলের API থেকে ইউজারের ছবি আনা
+                const gRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+                    headers: { Authorization: `Bearer ${session.providerAccessToken}` }
+                });
+                const gData = await gRes.json();
+                
+                if (gData.picture) {
+                    // ২. হাই-রেজুলিউশন ছবি নেওয়ার চেষ্টা
+                    const highResPic = gData.picture.replace('=s96-c', '=s500-c');
+                    
+                    // ৩. ছবিটি ডাউনলোড করে ফাইল বানানো
+                    const imgRes = await fetch(highResPic);
+                    const blob = await imgRes.blob();
+                    const file = new File([blob], 'google_avatar.jpg', { type: blob.type });
+
+                    // ৪. Appwrite Storage এ আপলোড করা
+                    const uploaded = await storage.createFile(BUCKET_ID, Appwrite.ID.unique(), file);
+                    
+                    // ৫. ডাটাবেস अपडेट করে profile_pic_id বসানো
+                    await databases.updateDocument(DB_ID, COLL_PROFILE, user.$id, {
+                        profile_pic_id: uploaded.$id
+                    });
+                }
+            }
+        } catch (picErr) {
+            console.warn("Failed to sync Google Picture:", picErr);
+        } finally {
+            toggleLoader(false);
+        }
+
     } catch (e) { 
         // নো সেশন, মানে লগিন নেই। কিছু করার দরকার নেই।
         console.log("No active Google session");

@@ -148,19 +148,45 @@ async function saveProfile() {
             facebook: document.getElementById('e-facebook').value
         };
 
-        await databases.updateDocument(DB_ID, COLL_PROFILE, user.$id, {
+        const updateData = {
             full_name: document.getElementById('e-name').value,
             post_name: document.getElementById('e-post').value,
             pbs_name: document.getElementById('e-pbs').value,
             office_name: document.getElementById('e-office').value,
-            mobile: document.getElementById('e-mobile').value,
             personal_json: JSON.stringify(updatedJson)
-        });
+        };
 
-        showToast("Profile Updated!");
+        const mobileVal = document.getElementById('e-mobile').value.trim();
+        if (mobileVal === "") {
+            updateData.mobile = null;
+        } else {
+            updateData.mobile = mobileVal;
+        }
+
+        await databases.updateDocument(DB_ID, COLL_PROFILE, user.$id, updateData);
+
+        showToast("প্রোফাইল সফলভাবে আপডেট হয়েছে!");
         toggleEdit();
         location.reload(); 
-    } catch(e) { showToast(e.message, 'error'); }
+    } catch(e) {
+        console.error("Profile Update Error:", e);
+        let errorMsg = "আপডেট করতে সমস্যা হয়েছে।";
+
+        if (e.message.toLowerCase().includes("mobile")) {
+            errorMsg = "মোবাইল নম্বরটি সঠিক নয়। সঠিক নম্বর দিন অথবা বক্সটি সম্পূর্ণ ফাঁকা রাখুন।";
+        } else if (e.message.toLowerCase().includes("string_too_short")) {
+            errorMsg = "কোনো একটি তথ্য খুব ছোট। আরও বিস্তারিত লিখুন।";
+        } else if (e.message.toLowerCase().includes("string_too_long")) {
+            errorMsg = "কোনো একটি তথ্য অনেক বড় হয়ে গেছে। ছোট করে লিখুন।";
+        } else if (e.message.toLowerCase().includes("permission")) {
+            errorMsg = "আপনার এই তথ্য পরিবর্তন করার অনুমতি নেই।";
+        } else if (e.message.toLowerCase().includes("network")) {
+            errorMsg = "ইন্টারনেট সংযোগ চেক করুন।";
+        } else {
+            errorMsg = "ত্রুটি: " + e.message;
+        }
+        showToast(errorMsg, 'error'); 
+    }
     finally { toggleLoader(false); }
 }
 
@@ -236,13 +262,23 @@ function copyApiKey() {
 
 async function changePassword() { 
     const n = document.getElementById('cp-new').value; 
-    if(!n) return showToast("Enter password", 'error'); 
+    if(!n) return showToast("নতুন পাসওয়ার্ড লিখুন", 'error'); 
     toggleLoader(true); 
     try { 
         await account.updatePassword(n); 
-        showToast("Password Changed!");
+        showToast("পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে!");
         toggleSecurity();
-    } catch(e) { showToast(e.message, 'error'); } 
+    } catch(e) { 
+        let errorMsg = "পাসওয়ার্ড পরিবর্তন করতে সমস্যা হয়েছে।";
+        if (e.message.toLowerCase().includes("password must be between")) {
+            errorMsg = "পাসওয়ার্ড অন্তত ৮ অক্ষরের হতে হবে।";
+        } else if (e.message.toLowerCase().includes("same as old")) {
+            errorMsg = "নতুন পাসওয়ার্ড আগের পাসওয়ার্ডের মত একই হতে পারবে না।";
+        } else {
+            errorMsg = "ত্রুটি: " + e.message;
+        }
+        showToast(errorMsg, 'error'); 
+    } 
     finally { toggleLoader(false); } 
 }
 
