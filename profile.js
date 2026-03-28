@@ -132,6 +132,14 @@ function setVal(id, val) { if(document.getElementById(id)) document.getElementBy
 
 // --- UPDATE PROFILE ---
 async function saveProfile() {
+    const mobileVal = document.getElementById('e-mobile').value.trim();
+    
+    // ✅ মোবাইল নম্বর রিকোয়ার্ড ভ্যালিডেশন
+    if (!mobileVal) {
+        showToast("মোবাইল নম্বর অবশ্যই দিতে হবে!", 'error');
+        return;
+    }
+
     toggleLoader(true);
     try {
         const user = await account.get();
@@ -153,35 +161,33 @@ async function saveProfile() {
             post_name: document.getElementById('e-post').value,
             pbs_name: document.getElementById('e-pbs').value,
             office_name: document.getElementById('e-office').value,
+            mobile: mobileVal, // এখন আর নাল পাঠানো যাবে না
             personal_json: JSON.stringify(updatedJson)
         };
-
-        const mobileVal = document.getElementById('e-mobile').value.trim();
-        if (mobileVal === "") {
-            updateData.mobile = null;
-        } else {
-            updateData.mobile = mobileVal;
-        }
 
         await databases.updateDocument(DB_ID, COLL_PROFILE, user.$id, updateData);
 
         showToast("প্রোফাইল সফলভাবে আপডেট হয়েছে!");
         toggleEdit();
-        location.reload(); 
+        
+        // পেজ রিলোড করার আগে ৩৫০মি.সে. অপেক্ষা করি যাতে টোস্ট দেখা যায়
+        setTimeout(() => location.reload(), 800); 
     } catch(e) {
         console.error("Profile Update Error:", e);
         let errorMsg = "আপডেট করতে সমস্যা হয়েছে।";
 
-        if (e.message.toLowerCase().includes("mobile")) {
-            errorMsg = "মোবাইল নম্বরটি সঠিক নয়। সঠিক নম্বর দিন অথবা বক্সটি সম্পূর্ণ ফাঁকা রাখুন।";
-        } else if (e.message.toLowerCase().includes("string_too_short")) {
-            errorMsg = "কোনো একটি তথ্য খুব ছোট। আরও বিস্তারিত লিখুন।";
-        } else if (e.message.toLowerCase().includes("string_too_long")) {
+        // Appwrite ত্রুটি বার্তাগুলোকে বাংলায় রূপান্তর
+        const msg = e.message.toLowerCase();
+        if (msg.includes("mobile")) {
+            errorMsg = "মোবাইল নম্বরটি সঠিক নয়। অনুগ্রহ করে সঠিক নম্বর দিন।";
+        } else if (msg.includes("string_too_short")) {
+            errorMsg = "তথ্যগুলো সঠিকভাবে পূরণ করুন (খুব ছোট হয়ে গেছে)।";
+        } else if (msg.includes("string_too_long")) {
             errorMsg = "কোনো একটি তথ্য অনেক বড় হয়ে গেছে। ছোট করে লিখুন।";
-        } else if (e.message.toLowerCase().includes("permission")) {
+        } else if (msg.includes("unique") || msg.includes("already exist")) {
+            errorMsg = "এই মোবাইল নম্বরটি অন্য কোনো একাউন্টে ব্যবহার করা হয়েছে।";
+        } else if (msg.includes("permission")) {
             errorMsg = "আপনার এই তথ্য পরিবর্তন করার অনুমতি নেই।";
-        } else if (e.message.toLowerCase().includes("network")) {
-            errorMsg = "ইন্টারনেট সংযোগ চেক করুন।";
         } else {
             errorMsg = "ত্রুটি: " + e.message;
         }

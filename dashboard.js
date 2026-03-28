@@ -37,6 +37,16 @@ const appPlugins = [
         action: () => Data3FezApp.initView()
     },
     {
+        id: 'pbshub',
+        title: 'PbsHub',
+        icon: 'fa-solid fa-book-open',
+        color: 'bg-amber-100 text-amber-600',
+        desc: 'Technical Manuals, Specifications, Meters & Equipment docs.',
+        category: 'Resources',
+        allowedPosts: ['All'],
+        action: () => PbsHubApp.initView()
+    },
+    {
         id: 'meter_test',
         title: 'Meter Test Calculetor',
         icon: 'fa-solid fa-tachometer-alt',
