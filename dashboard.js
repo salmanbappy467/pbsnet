@@ -65,6 +65,16 @@ const appPlugins = [
         category: 'Tools',
         allowedPosts: ['All'],
         action: () => PfiCalculatorApp.initView()
+    },
+    {
+        id: 'balance',
+        title: 'Meter Balance',
+        icon: 'fa-solid fa-scale-balanced',
+        color: 'bg-purple-100 text-purple-600',
+        desc: 'Smart Stock & Ledger Management Tool.',
+        category: 'Automation',
+        allowedPosts: ['All'],
+        action: () => BalanceApp.initView()
     }
 ];
 
